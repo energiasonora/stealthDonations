@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stealth Donations - Anonymous Crowdfunding</title>
+  <!-- Pico CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <!-- Custom Styles -->
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9f9f9;
+      color: #222; /* Darker text for better readability */
+    }
+    .hero {
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      color: white; /* White text for hero section */
+      padding: 4rem 1rem;
+      text-align: center;
+    }
+
+
+    .hero img {
+      max-width: 200px;
+      margin-bottom: 1rem;
+    }
+    .cta-button {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .cta-button:hover {
+      background-color: #e64a19;
+    }
+    .features {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: #222; /* Darker text for features section */
+    }
+    .feature-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin: 1rem auto;
+      max-width: 300px;
+      color: #222; /* Darker text inside cards */
+    }
+    .footer {
+      background-color: #1a1a1a;
+      color: white; /* White text for footer */
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .footer a {
+      color: #ff5722; /* Accent color for links */
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    header{
+      background-color: #dfebf8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header with Logo -->
+  <header style=" padding: 1rem; text-align: center;">
+    <img src="./static/stealthDonations.png" alt="Stealth Donations Logo" style="max-width: 150px;">
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <!-- <div>
+      <img src="./static/stealthDonations.png" alt="Stealth Donations Logo">
+    </div> -->
+    <p>Censorship-resistant, anonymous crowdfunding powered by stealth addresses.</p>
+    <button class="cta-button" onclick="location.href='#create-campaign'">Create a Campaign</button>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2>Why Choose Stealth Donations?</h2>
+    <div class="grid">
+      <div class="feature-card">
+        <h3>Privacy-Preserving</h3>
+        <p>Donate and receive funds anonymously using stealth addresses.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Censorship-Resistant</h3>
+        <p>No intermediaries. Fully decentralized and unstoppable.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Flexible Fundraising</h3>
+        <p>Support individuals, groups, or multisig wallets with ease.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 Stealth Donations. All rights reserved.</p>
+    <p>
+      <a href="#how-it-works">How It Works</a> | 
+      <a href="#">FAQ</a> | 
+      <a href="#">Contact Us</a>
+    </p>
+  </footer>
+</body>
+</html>

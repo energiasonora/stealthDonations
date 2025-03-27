@@ -1,0 +1,25 @@
+{
+  "name": "stealthDonations",
+  "version": "1.0.0",
+  "repository": "git@github.com:energiasonora/stealthDonations.git",
+  "author": "xunorus <xunorus@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@noble/hashes": "^1.7.1",
+    "@noble/secp256k1": "^2.2.3",
+    "@xmtp/browser-sdk": "^0.0.23",
+    "@xmtp/xmtp-js": "^13.0.4",
+    "parcel": "2.11.0",
+    "parcel-reporter-static-files-copy": "^1.5.3"
+  },
+  "staticFiles": {
+    "staticPath": "src/static"
+  },
+  "type": "module",
+  "@parcel/resolver-default": {
+    "packageExports": true
+  },
+  "devDependencies": {
+    "buffer": "^5.5.0||^6.0.0"
+  }
+}

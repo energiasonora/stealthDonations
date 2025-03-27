@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings Modal</title>
+  <!-- Pico CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <style>
+    /* Custom styles for themes */
+    body.light-theme {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    body.dark-theme {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--background);
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    .modal.active {
+      display: block;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    .overlay.active {
+      display: block;
+    }
+
+    /* Checkbox styling */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2196f3;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+<body>
+  <nav class="container-fluid">
+    <ul>
+      <li><strong>Settings Modal Example</strong></li>
+    </ul>
+    <ul>
+      <li><button onclick="openModal()">Settings</button></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1>Welcome to the Settings Modal Example</h1>
+    <p>Click the "Settings" button above to change the theme.</p>
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="modal" class="modal">
+    <h2>Settings</h2>
+    <form>
+      <label for="theme-toggle">Dark Mode:</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider"></span>
+      </label>
+      <button type="button" onclick="closeModal()">Close</button>
+    </form>
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="overlay"></div>
+
+  <script>
+    // Function to open the modal
+    function openModal() {
+      const modal = document.getElementById('modal');
+      const overlay = document.getElementById('overlay');
+      modal.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    // Function to close the modal
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      const overlay = document.getElementById('overlay');
+      modal.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    // Function to apply the selected theme
+    function applyTheme(isDarkMode) {
+      document.body.className = ''; // Clear existing classes
+      if (isDarkMode) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.add('light-theme');
+      }
+    }
+
+    // Function to save settings
+    function saveSettings(isDarkMode) {
+      localStorage.setItem('isDarkMode', isDarkMode);
+    }
+
+    // Function to load the saved theme from localStorage
+    function loadSavedTheme() {
+      const savedIsDarkMode = localStorage.getItem('isDarkMode') === 'true'; // Default to false if no preference is saved
+      applyTheme(savedIsDarkMode);
+
+      // Set the checkbox state based on the saved preference
+      const themeToggle = document.getElementById('theme-toggle');
+      themeToggle.checked = savedIsDarkMode;
+
+      // Add event listener to the checkbox to toggle the theme
+      themeToggle.addEventListener('change', (event) => {
+        const isDarkMode = event.target.checked;
+        applyTheme(isDarkMode);
+        saveSettings(isDarkMode);
+      });
+    }
+
+    // Initialize the app by loading the saved theme
+    window.onload = () => {
+      loadSavedTheme();
+
+      // Add event listener to close modal when clicking outside
+      const overlay = document.getElementById('overlay');
+      overlay.addEventListener('click', closeModal);
+    };
+  </script>
+</body>
+</html>

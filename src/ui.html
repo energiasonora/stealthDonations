@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings Modal</title>
+  <!-- Pico CSS -->
+  <link rel="stylesheet" href="css/pico.min.css">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"> -->
+  <style>
+    /* Custom styles for themes */
+    body.light-theme {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    body.dark-theme {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--background);
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    .modal.active {
+      display: block;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    .overlay.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <nav class="container-fluid">
+    <ul>
+      <li><strong>Settings Modal Example</strong></li>
+    </ul>
+    <ul>
+      <li><button onclick="openModal()">Settings</button></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1>Welcome to the Settings Modal Example</h1>
+    <p>Click the "Settings" button above to change the theme.</p>
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="modal" class="modal">
+    <h2>Settings</h2>
+    <form>
+      <label for="theme-toggle">Theme:</label>
+      <select id="theme-toggle">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <button type="button" onclick="saveSettings()">Save</button>
+    </form>
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="overlay"></div>
+
+  <script>
+    // Function to open the modal
+    function openModal() {
+      const modal = document.getElementById('modal');
+      const overlay = document.getElementById('overlay');
+      modal.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    // Function to close the modal
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      const overlay = document.getElementById('overlay');
+      modal.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    // Function to save settings
+    function saveSettings() {
+      const themeSelect = document.getElementById('theme-toggle');
+      const selectedTheme = themeSelect.value;
+
+      // Apply the selected theme
+      applyTheme(selectedTheme);
+
+      // Save the selected theme to localStorage
+      localStorage.setItem('theme', selectedTheme);
+
+      // Close the modal
+      closeModal();
+    }
+
+    // Function to apply the selected theme
+    function applyTheme(theme) {
+      document.body.className = ''; // Clear existing classes
+      document.body.classList.add(`${theme}-theme`);
+    }
+
+    // Function to load the saved theme from localStorage
+    function loadSavedTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light'; // Default to 'light' if no preference is saved
+      applyTheme(savedTheme);
+
+      // Set the dropdown to the saved theme
+      const themeSelect = document.getElementById('theme-toggle');
+      themeSelect.value = savedTheme;
+    }
+
+    // Initialize the app by loading the saved theme
+    window.onload = () => {
+      loadSavedTheme();
+
+      // Add event listener to close modal when clicking outside
+      const overlay = document.getElementById('overlay');
+      overlay.addEventListener('click', closeModal);
+    };
+  </script>
+</body>
+</html>
