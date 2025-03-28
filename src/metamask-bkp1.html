@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Integration</title>
+    <!-- Include Pico CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <!-- Include MetaMask SDK -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@metamask/sdk@latest/dist/browser/metamask-sdk.min.js"></script> -->
+</head>
+
+<body>
+    <main class="container">
+        <h1>MetaMask Connection Test</h1>
+        <p id="status">Status: Not Connected</p>
+        <button id="connectButton" class="contrast">Connect to MetaMask</button>
+        <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p>
+        <!-- </main> -->
+
+        <!-- <main class="container"> -->
+        <h1>MetaMask Sign Message Test</h1>
+        <!-- <p id="status">Status: Not Connected</p> -->
+        <!-- <button id="connectButton" class="contrast">Connect to MetaMask</button> -->
+        <!-- <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p> -->
+        <button id="signButton" class="secondary" style="display: none;">Sign "create stealth address"</button>
+        <p id="signatureDisplay" style="display: none;">Signature: <span id="signature"></span></p>
+    </main>
+
+    <script type="module">
+        import { MetaMaskSDK } from "@metamask/sdk"
+        window.MetaMaskSDK = MetaMaskSDK;
+
+        // const MMSDK = new MetaMaskSDK({
+        //   dappMetadata: {
+        //     name: "Example JavaScript Dapp",
+        //     url: window.location.href,
+        //   },
+        //   infuraAPIKey: process.env.INFURA_API_KEY,
+        // })
+
+        // const ethereum = MMSDK.getProvider()
+
+        // // Connect to MetaMask
+        // const accounts = await MMSDK.connect()
+
+        // // Make requests
+        // const result = await ethereum.request({ 
+        //   method: "eth_accounts", 
+        //   params: [] 
+        // })
+    </script>
+    <script>
+        window.globalOptionsList = [
+            {
+                'ALCHEMY_API_KEY': 'X048z0PxuDPd5vbTiKLbWJgogG9Tvd2I',
+                'INFURA_API_KEY': 'b17405e634bd40308be3eb4fa2485c9a',
+                'IPFS_GATEWAY': 'https://gateway.lighthouse.storage/ipfs/',
+                "POLYBASE_DB": "https://explorer.testnet.polybase.xyz/studio/pk%2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3%2FSTARKID/collections/STARKID",
+                "ZK_PUBKEY": "2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3"
+            },
+        ]
+        window.onload = async () => {
+            //         const MMSDK = new MetaMaskSDK({
+            //   dappMetadata: {
+            //     name: "Example JavaScript Dapp",
+            //     url: window.location.href,
+            //   },
+            //   infuraAPIKey: globalOptionsList[0].INFURA_API_KEY,
+
+            // })
+
+            // const ethereum = MMSDK.getProvider()
+            // Initialize the MetaMask SDK
+            // const MMSDK = new MetaMaskSDK.MetaMaskSDK();
+            // const ethereum = MMSDK.getProvider(); // Get the Ethereum provider
+
+        }
+        // DOM Elements
+        const connectButton = document.getElementById('connectButton');
+        const status = document.getElementById('status');
+        const accountDisplay = document.getElementById('accountDisplay');
+        const accountSpan = document.getElementById('account');
+
+
+        // DOM Elements
+        // const connectButton = document.getElementById('connectButton');
+        const signButton = document.getElementById('signButton');
+        // const status = document.getElementById('status');
+        // const accountDisplay = document.getElementById('accountDisplay');
+        // const accountSpan = document.getElementById('account');
+        const signatureDisplay = document.getElementById('signatureDisplay');
+        const signatureSpan = document.getElementById('signature');
+
+        // Function to handle MetaMask connection
+        async function connectMetaMask() {
+            console.log('connectMetaMask')
+
+            const MMSDK = new MetaMaskSDK({
+                dappMetadata: {
+                    name: "Example JavaScript Dapp",
+                    url: window.location.href,
+                },
+                infuraAPIKey: globalOptionsList[0].INFURA_API_KEY,
+
+            })
+
+            const ethereum = MMSDK.getProvider()
+
+
+            // Initialize the MetaMask SDK
+            //   const MMSDK = new MetaMaskSDK.MetaMaskSDK();
+            //     const ethereum = MMSDK.getProvider(); // Get the Ethereum provider
+
+
+            // Connect to MetaMask
+            const accounts = await MMSDK.connect()
+            console.log('accounts:', accounts)
+            // Make requests
+            const result = await ethereum.request({
+                method: "eth_accounts",
+                params: []
+            })
+
+            return
+            try {
+                // Check if MetaMask is installed
+                if (!ethereum) {
+                    status.textContent = 'Error: MetaMask is not installed.';
+                    return;
+                }
+
+                // Request account access
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
+                if (accounts.length > 0) {
+                    // Update UI with connected account
+                    status.textContent = 'Status: Connected';
+                    accountSpan.textContent = accounts[0];
+                    accountDisplay.style.display = 'block';
+                } else {
+                    status.textContent = 'Error: No accounts found.';
+                }
+            } catch (error) {
+                console.error(error);
+                status.textContent = `Error: ${error.message}`;
+            }
+        }
+
+
+
+
+        // Function to sign a message
+        async function signMessage() {
+            try {
+                if (!currentAccount) {
+                    status.textContent = 'Error: Please connect your wallet first.';
+                    return;
+                }
+
+                // The message to sign
+                const message = 'create stealth address';
+
+                // Convert the message to a hex string (required by MetaMask)
+                const messageHex = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
+
+                // Request the user to sign the message
+                const signature = await ethereum.request({
+                    method: 'personal_sign',
+                    params: [messageHex, currentAccount],
+                });
+
+                // Display the signature
+                signatureSpan.textContent = signature;
+                signatureDisplay.style.display = 'block';
+                status.textContent = 'Message signed successfully!';
+            } catch (error) {
+                console.error(error);
+                status.textContent = `Error: ${error.message}`;
+            }
+        }
+
+
+        // Add event listener to the button
+        connectButton.addEventListener('click', connectMetaMask);
+        signButton.addEventListener('click', signMessage);
+
+
+
+    </script>
+</body>
+
+</html>

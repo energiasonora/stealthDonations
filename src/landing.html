@@ -5,13 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stealth Donations - Anonymous Crowdfunding</title>
   <!-- Pico CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"> -->
+  <link rel="stylesheet" href="css/pico.min.css">
+
   <!-- Custom Styles -->
   <style>
+    :root{
+      /* --pico-h2-color: #E1400B!important;
+      --pico-h3-color: #e36d6d!important;
+      --pico-color: #ce7e7b!important; */
+      
+    }
+    /* :root {
+          --font: white;
+          --bk: linear-gradient(var(--c0), var(--c0b));
+          --bckmodal: #262626;
+          --mainBk: #2996b4;
+        } */
+        
+        :root {
+              --font: white;
+              --bckmodal: #262626;
+              --mainBk: #2996b4;
+            }
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f9f9f9;
       color: #222; /* Darker text for better readability */
+    }
+
+        
+
+   
+         /* Custom styles for themes */
+    body.light-theme, html {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    body, html{
+      /* body.dark-theme, html{ */
+      background-color: #121212;
+            background-image: radial-gradient(circle, var(--mainBk) 0%, var(--bckmodal) 100%);
+
+      color: #ffffff;
     }
     .hero {
       background: linear-gradient(135deg, #1a1a1a, #333);
@@ -72,7 +108,7 @@
 <body>
   <!-- Header with Logo -->
   <header style=" padding: 1rem; text-align: center;">
-    <img src="./static/stealthDonations.png" alt="Stealth Donations Logo" style="max-width: 150px;">
+    <img src="./static/stealthDonationsB.png" alt="Stealth Donations Logo" style="max-width: 150px;">
   </header>
 
   <!-- Hero Section -->

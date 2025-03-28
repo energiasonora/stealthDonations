@@ -5,6 +5,7 @@
   "author": "xunorus <xunorus@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@metamask/sdk": "^0.32.1",
     "@noble/hashes": "^1.7.1",
     "@noble/secp256k1": "^2.2.3",
     "@xmtp/browser-sdk": "^0.0.23",
