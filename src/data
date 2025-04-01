@@ -1,0 +1,46 @@
+// let alicewallet = await aliceWallet()
+// const alicePrivateKeyA = alicewallet.privateKey;
+// let alicePrivateKey = ethers.getBytes(alicePrivateKeyA);
+// let alicePublicKey = getPublicKey(alicePrivateKey);
+// console.log('alicePublicKey: ', alicePublicKey)
+
+// let stealthAddress = await generateStealthAddress(alicePrivateKey, alicePublicKey)
+// console.log('SELF ALICE stealthAddress: ', stealthAddress.stealthAddress)
+// // ---
+// signer = alicewallet 
+
+// // ---
+// let msgToHash = `\x19Ethereum Signed Message:\n13${pp}`
+//  let msgToSign = ethers.keccak256(ethers.toUtf8Bytes(msgToHash));
+
+
+// const signature = await signer.signMessage(msgToSign);
+//     console.log("Signature:", signature);
+
+let signer  = await aliceWallet()
+let msgToHash = `\x19Ethereum Signed Message:\n13${pp}`
+// '\x19Ethereum Signed Message:\n130x3078303363326365623930323337633465636132613863653531633166326432313766383630646362383930396364633965326339623561303338653730663665623963,0x9d51a3e880fcb01e5b71658fb8f3cef8d32900eb'
+ let msgToSign = ethers.keccak256(ethers.toUtf8Bytes(msgToHash));
+
+const signature = await signer.signMessage(msgToSign);
+    console.log("Signature:", signature);
+    const recoveredAddress = ethers.verifyMessage(msgToSign, signature);//ok!!!.recupera bie la address
+    console.warn('✅  ⛓️‍💥 Recovered Address:', recoveredAddress);
+
+    mi metodo con ethers produced 
+    0xde5adc783487902666279fe57a3b21deb77fce569167d422b66e86a66b0838c60b7bf35a02421d2f7b530f35ec49195c1346569b6b421e038fd8321e19d4ec171c
+
+    y metamask produjo 
+    0x17a9e21cc109e96ea1220c43a50f1d67f46197c607f56438e959e0fad1b8c2d21ae937f4a36cea24de00d8d9cdffa3490626035d600bcfb3787a9eaf3d46320f1c
+
+
+    si paso mi firma esto por 
+    ethers.verifyMessage(msgToSign, '0xde5adc783487902666279fe57a3b21deb77fce569167d422b66e86a66b0838c60b7bf35a02421d2f7b530f35ec49195c1346569b6b421e038fd8321e19d4ec171c')
+reproduce correctamente la address
+0x9D51A3E880fCb01E5b71658fb8f3cEf8d32900eB
+
+la firma con metamask devuelve diferentes addressess
+
+
+    const recoveredAddress = ethers.verifyMessage(message, signature);//ok!!!.recupera bie la address
+    console.warn('✅  ⛓️‍💥 Recovered Address:', recoveredAddress);

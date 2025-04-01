@@ -1,222 +1,752 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetaMask Integration</title>
-  <!-- Include Pico CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-  <!-- Include MetaMask SDK -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/@metamask/sdk@latest/dist/browser/metamask-sdk.min.js"></script> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Stealth Donations</title>
+    <!-- Include Pico CSS -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"> -->
+    <!-- <link rel="stylesheet" href="css/pico@1.min.css" /> -->
+    <!-- pico v2 -->
+    <link rel="stylesheet" href="css/pico.min.css" />
+    <script src="js/sweetalert2.all.min.js"></script>
+    <script src="js/ethers-6.13.2.umd.min.js"></script>
+
+    <!-- Include MetaMask SDK -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@metamask/sdk@latest/dist/browser/metamask-sdk.min.js"></script> -->
 </head>
+
 <body>
-  <main class="container">
-    <h1>MetaMask Connection Test</h1>
-    <p id="status">Status: Not Connected</p>
-    <button id="connectButton" class="contrast">Connect to MetaMask</button>
-    <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p>
-  <!-- </main> -->
+    <main class="container">
+        <!-- <h1>MetaMask Stealth Donations </h1>
+        <p>Given Bob's public key: 03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c</p> -->
+        <p id="status">Status: Not Connected</p>
+        <button id="connectButton" class="contrast">Connect to MetaMask</button>
+        <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p>
+        <!-- </main> -->
 
-  <!-- <main class="container"> -->
-    <h1>MetaMask Sign Message Test</h1>
-    <!-- <p id="status">Status: Not Connected</p> -->
-    <!-- <button id="connectButton" class="contrast">Connect to MetaMask</button> -->
-    <!-- <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p> -->
-    <button id="signButton" class="secondary" style="display: none;">Sign "create stealth address"</button>
-    <p id="signatureDisplay" style="display: none;">Signature: <span id="signature"></span></p>
-  </main>
+        <!-- <main class="container"> -->
+        <h1>Sign to create your Stealth Address (proxy address)</h1>
+        <!-- <p id="status">Status: Not Connected</p> -->
+        <!-- <button id="connectButton" class="contrast">Connect to MetaMask</button> -->
+        <!-- <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p> -->
+        <button id="signButton" class="secondary" style="display: none;">Create proxy address</button>
+        <p id="signatureDisplay" style="display: none;">Signature: <span id="signature"></span></p>
 
-  <script type="module" >
-import { MetaMaskSDK } from "@metamask/sdk"
-window.MetaMaskSDK =MetaMaskSDK;
 
-// const MMSDK = new MetaMaskSDK({
-//   dappMetadata: {
-//     name: "Example JavaScript Dapp",
-//     url: window.location.href,
-//   },
-//   infuraAPIKey: process.env.INFURA_API_KEY,
-// })
+        <button id="createOwnStealthAddressButton" class="secondary" style="display: none;">Create your stealth proxy
+            address</button>
+        <p id="stealthAddressDisplay" style="display: none;">Stealth Address: <span id="stealthAddress"></span></p>
 
-// const ethereum = MMSDK.getProvider()
+    </main>
 
-// // Connect to MetaMask
-// const accounts = await MMSDK.connect()
+    <script type="module">
+        import hexer from 'browser-string-hexer';
+        window.hexer = hexer;
 
-// // Make requests
-// const result = await ethereum.request({ 
-//   method: "eth_accounts", 
-//   params: [] 
-// })
-  </script>
-  <script>
-    	window.globalOptionsList = [
-			{
+
+        import { getPublicKey, utils } from '@noble/secp256k1';
+        window.getPublicKey = getPublicKey;
+        window.utils = utils;
+        
+        import * as secp from '@noble/secp256k1';
+        window.secp = secp;
+
+
+        // import { sha256 } from '@noble/hashes/sha256';
+        // window.sha256 = sha256;
+
+        // import { utf8ToBytes } from '@noble/hashes/utils';
+        // window.utf8ToBytes = utf8ToBytes;
+
+
+        import { MetaMaskSDK } from "@metamask/sdk"
+        window.MetaMaskSDK = MetaMaskSDK;
+
+    </script>
+    <script>
+        window.globalOptionsList = [
+            {
+                'INFURA_API_KEY': 'b17405e634bd40308be3eb4fa2485c9a',
                 'ALCHEMY_API_KEY': 'X048z0PxuDPd5vbTiKLbWJgogG9Tvd2I',
-                'INFURA_API_KEY' : 'b17405e634bd40308be3eb4fa2485c9a',
-				'IPFS_GATEWAY': 'https://gateway.lighthouse.storage/ipfs/',
-				"POLYBASE_DB": "https://explorer.testnet.polybase.xyz/studio/pk%2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3%2FSTARKID/collections/STARKID",
-				"ZK_PUBKEY": "2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3"
-			},
+                'IPFS_GATEWAY': 'https://gateway.lighthouse.storage/ipfs/',
+                "POLYBASE_DB": "https://explorer.testnet.polybase.xyz/studio/pk%2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3%2FSTARKID/collections/STARKID",
+                "ZK_PUBKEY": "2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3"
+            },
         ]
-      window.onload = async () => {
-//         const MMSDK = new MetaMaskSDK({
-//   dappMetadata: {
-//     name: "Example JavaScript Dapp",
-//     url: window.location.href,
-//   },
-//   infuraAPIKey: globalOptionsList[0].INFURA_API_KEY,
 
-// })
-
-// const ethereum = MMSDK.getProvider()
-        // Initialize the MetaMask SDK
-        // const MMSDK = new MetaMaskSDK.MetaMaskSDK();
-        // const ethereum = MMSDK.getProvider(); // Get the Ethereum provider
-    
-    }
-    // DOM Elements
-    const connectButton = document.getElementById('connectButton');
-    const status = document.getElementById('status');
-    const accountDisplay = document.getElementById('accountDisplay');
-    const accountSpan = document.getElementById('account');
+        // DOM Elements
+        const connectButton = document.getElementById('connectButton');
+        const status = document.getElementById('status');
+        const accountDisplay = document.getElementById('accountDisplay');
+        const accountSpan = document.getElementById('account');
 
 
         // DOM Elements
-        // const connectButton = document.getElementById('connectButton');
-    const signButton = document.getElementById('signButton');
-    // const status = document.getElementById('status');
-    // const accountDisplay = document.getElementById('accountDisplay');
-    // const accountSpan = document.getElementById('account');
-    const signatureDisplay = document.getElementById('signatureDisplay');
-    const signatureSpan = document.getElementById('signature');
-
-    // Function to handle MetaMask connection
-    async function connectMetaMaskOLD() {
-console.log('connectMetaMask')
-
-const MMSDK = new MetaMaskSDK({
-  dappMetadata: {
-    name: "Example JavaScript Dapp",
-    url: window.location.href,
-  },
-  infuraAPIKey: globalOptionsList[0].INFURA_API_KEY,
-
-})
-
-const ethereum = MMSDK.getProvider()
+        const signButton = document.getElementById('signButton');
+        const signatureDisplay = document.getElementById('signatureDisplay');
+        const signatureSpan = document.getElementById('signature');
 
 
-  // Initialize the MetaMask SDK
-//   const MMSDK = new MetaMaskSDK.MetaMaskSDK();
-//     const ethereum = MMSDK.getProvider(); // Get the Ethereum provider
+        const createOwnStealthAddressButton = document.getElementById('createOwnStealthAddressButton');
+        const stealthAddressDisplay = document.getElementById('stealthAddressDisplay');
+        const stealthAddressSpan = document.getElementById('stealthAddress');
 
-    
-// Connect to MetaMask
-const accounts = await MMSDK.connect()
-console.log('accounts:',accounts)
-// Make requests
-const result = await ethereum.request({ 
-  method: "eth_accounts", 
-  params: [] 
-})
 
-return
-      try {
-        // Check if MetaMask is installed
-        if (!ethereum) {
-          status.textContent = 'Error: MetaMask is not installed.';
-          return;
+
+        async function handleConnectAndSign() {
+            console.log('handleConnectAndSign')
+
+            const MMSDK = new MetaMaskSDK({
+                dappMetadata: {
+                    name: "stealthDonations Dapp",
+                    url: window.location.href,
+                },
+                infuraAPIKey: globalOptionsList[0].INFURA_API_KEY,
+                // infuraAPIKey: 9219faae2bac4d24b95c2d967b22005a,
+
+            })
+
+            window.MMSDK = MMSDK;
+            // Connect and get accounts
+            const accounts = await MMSDK.connect()
+            console.log('accounts:', accounts)
+
+            // Update UI with connected account
+            if (accounts.length > 0) {
+                status.textContent = 'Status: Connected';
+                currentAccount = accounts[0];
+                connectButton.style.display = 'none';
+                accountSpan.textContent = accounts[0];
+                accountDisplay.style.display = 'block';
+                signButton.style.display = 'inline-block'; // Show the create sign button
+                createOwnStealthAddressButton.style.display = 'inline-block'; // Show the create stealth address button
+            } else {
+                status.textContent = 'Error: No accounts found.';
+            }
+
+            // Get provider for RPC requests
+            const provider = MMSDK.getProvider()
+
+            // Batch multiple RPC requests
+            const batchResults = await provider.request({
+                method: "metamask_batch",
+                params: [
+                    { method: "eth_accounts" },
+                    { method: "eth_chainId" }
+                ]
+            })
+
+            console.log('account:', batchResults[0][0])
+            console.log('chaiId:', parseInt(batchResults[1], 16))
+
+            return
         }
 
-        // Request account access
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const toHexString = (bytes) => {
+            return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        };
 
-        if (accounts.length > 0) {
-          // Update UI with connected account
-          status.textContent = 'Status: Connected';
-          accountSpan.textContent = accounts[0];
-          accountDisplay.style.display = 'block';
-        } else {
-          status.textContent = 'Error: No accounts found.';
-        }
-      } catch (error) {
-        console.error(error);
-        status.textContent = `Error: ${error.message}`;
-      }
-    }
-
-
-  // Function to handle MetaMask connection
-  async function connectMetaMask() {
-      try {
-        // Check if MetaMask is installed
-        if (!ethereum) {
-          status.textContent = 'Error: MetaMask is not installed.';
-          return;
+        function removeHexPrefix(hexString) {
+            // Check if the hex string starts with '0x' and remove it
+            if (hexString.startsWith('0x')) {
+                return hexString.slice(2);
+            }
+            return hexString;
         }
 
-        // Request account access
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        // METAMASK stAddr generator
+        async function createProxyAddress() {
+            console.log('createProxyAddress()')
 
-        if (accounts.length > 0) {
-          // Update UI with connected account
-          currentAccount = accounts[0];
-          status.textContent = 'Status: Connected';
-          accountSpan.textContent = currentAccount;
-          accountDisplay.style.display = 'block';
-          signButton.style.display = 'inline-block'; // Show the sign button
-        } else {
-          status.textContent = 'Error: No accounts found.';
+            try {
+                if (!currentAccount) {
+                    status.textContent = 'Error: Please connect your wallet first.';
+                    return;
+                }
+
+
+                // Step: The message to sign
+                const message = 'create stealth address';
+                console.log('message:', message)
+
+                let hexedMessage = hexer(message);
+                console.log('mhex:', hexedMessage)
+
+
+
+                // 2. Derive the Shared Secret: Alice hashes the signature to derive hs:
+                let params = [hexedMessage, currentAccount];
+
+                // Request the user to sign the message
+                const ethereummmsdk = mmsdk.getProvider()
+                const signature = await ethereummmsdk.request({
+                    method: 'personal_sign',//Prepends a safe prefix
+                    params: params,//v1 messageHex. recupera bien la address
+                });
+                ssig = signature
+                console.log('Signature:', signature);
+
+                // ...............
+                // Step: recover the address from the signed message
+                const recoveredAddress = ethers.verifyMessage(message, signature);//ok!!!.recupera bie la address
+                console.warn('✅  ⛓️‍💥 Recovered Address from signature:', recoveredAddress);
+
+                // ...............
+                // GET USER(ALICE) PUBKEY
+                const alicepublicKey = await derivePubkey(hexedMessage, signature);
+                alicepubkey = alicepublicKey;
+                console.log('alicepublicKey:', alicepublicKey)
+
+                let alicepublicKeyDehex = removeHexPrefix(alicepublicKey)
+                // ...............
+
+                // Display the signature
+                signatureSpan.textContent = signature;
+                signatureDisplay.style.display = 'block';
+                status.textContent = 'Message signed successfully!';
+
+
+
+                // 2 .Alice hashes the signature to derive hs:
+                const sharedSecret = ethers.keccak256(signature);
+                console.log('Shared Secret:', sharedSecret);
+                signatureSpan.innerHTML += `<br><br>Shared secret: ${sharedSecret}`;
+
+
+                //////////////////////////
+                // 3. Alice computes the stealth public key (stPk) using hs and Bob's public key (B):
+                // const stPk = hs * G + B; // Elliptic curve math
+                //////////////////////////
+
+                // A.Multiply hs by the curve generator point (G): 
+
+                const G = secp.ProjectivePoint.BASE;  // Generator point G
+                const hsBigInt = BigInt(sharedSecret);  // hs should already be in hex or BigInt format
+                const hsPoint = G.multiply(hsBigInt);  // hs * G
+                hsp = hsPoint
+
+                // B.Adition it to Bob’s public key:
+                const point = secp.ProjectivePoint.fromHex(alicepublicKeyDehex);  // Bob's public key point
+                //  const point = secp.ProjectivePoint.fromHex(bobPublicKey);  // Bob's public key point
+
+                const stealthPubPoint = hsPoint.add(point);  // hs * G + B (Bob's public key)
+                spp = stealthPubPoint
+
+                // C.Convert the resulting point to an Ethereum address: 
+                const stealthPubKey = stealthPubPoint.toHex();  // Convert to hex
+                const stealthAddress = ethers.computeAddress('0x' + stealthPubKey);  // Convert to Ethereum address
+                stPk = stealthAddress
+                console.log('👻Stealth Address:', stealthAddress);
+                signatureSpan.innerHTML += `<br><br>Stealth PROXY address: ${stealthAddress}`;
+
+                return { stealthAddress, sharedSecret }
+            } catch (error) {
+                console.error(error);
+                status.textContent = `Error: ${error.message}`;
+            }
+
         }
-      } catch (error) {
-        console.error(error);
-        status.textContent = `Error: ${error.message}`;
-      }
-    }
 
-        // Function to sign a message
-        async function signMessage() {
-      try {
-        if (!currentAccount) {
-          status.textContent = 'Error: Please connect your wallet first.';
-          return;
+        async function metamaskGenStAddr(bobPublicKey) {
+            console.log('metamaskStAddrGen()')
+
+
+            try {
+                if (!currentAccount) {
+                    status.textContent = 'Error: Please connect your wallet first.';
+                    return;
+                }
+
+                // GENERATE PUBLIC KEY (completar)
+                if (!/^[0-9a-fA-F]+$/.test(bobPublicKey)) {
+                    bobPublicKey = "03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c";
+                }
+
+
+                // ------
+                const bobPublicKeyHexed = `0x${bobPublicKey}`;
+                console.log('bobPublicKeyHexed: ', bobPublicKeyHexed, bobPublicKey)
+                // 1. Alice uses MetaMask to sign a message containing Bob's public key (B):
+                const message = ethers.solidityPacked(["bytes"], [bobPublicKeyHexed]);
+                mmsg = message;
+                console.log('message:', message)
+                let hexedMessage = hexer(message);
+                hmmsg = hexedMessage
+
+                // 2. Derive the Shared Secret: Alice hashes the signature to derive hs:
+                let params = [hexedMessage, currentAccount];
+                pp = params;
+                // const values = [bobPublicKey, "SharedSecretMessage"];
+
+                // Request the user to sign the message
+                const ethereummmsdk = mmsdk.getProvider()
+                const signature = await ethereummmsdk.request({
+                    method: 'personal_sign',//Prepends a safe prefix
+                    params: [hexedMessage, currentAccount],//v1 messageHex. recupera bien la address
+                    params: params,//v1 messageHex. recupera bien la address
+                });
+                ssig = signature
+                console.log('Signature:', signature);
+
+
+                // ...............
+                // GET USER(ALICE) PUBKEY
+                const publicKey = await derivePubkey(hexedMessage, signature);
+                console.log('publicKey():', publicKey)
+                // ...............
+
+                // Display the signature
+                signatureSpan.textContent = signature;
+                signatureDisplay.style.display = 'block';
+                status.textContent = 'Message signed successfully!';
+
+                // Step: recover the address from the signed message
+                const recoveredAddress = ethers.verifyMessage(message, signature);//ok!!!.recupera bie la address
+                console.warn('✅  ⛓️‍💥 Recovered Address:', recoveredAddress);
+
+                // 2 .Alice hashes the signature to derive hs:
+                const sharedSecret = ethers.keccak256(signature);
+                console.log('Shared Secret:', sharedSecret);
+                signatureSpan.innerHTML += `<br><br>Shared secret: ${sharedSecret}`;
+
+
+                //////////////////////////
+                // 3. Alice computes the stealth public key (stPk) using hs and Bob's public key (B):
+                // const stPk = hs * G + B; // Elliptic curve math
+                //////////////////////////
+
+                // A.Multiply hs by the curve generator point (G): 
+
+                const G = secp.ProjectivePoint.BASE;  // Generator point G
+                const hsBigInt = BigInt(sharedSecret);  // hs should already be in hex or BigInt format
+                const hsPoint = G.multiply(hsBigInt);  // hs * G
+                hsp = hsPoint
+
+                // B.Adition it to Bob’s public key:
+                const point = secp.ProjectivePoint.fromHex(bobPublicKey);  // Bob's public key point
+                const stealthPubPoint = hsPoint.add(point);  // hs * G + B (Bob's public key)
+                spp = stealthPubPoint
+
+                // C.Convert the resulting point to an Ethereum address: 
+                const stealthPubKey = stealthPubPoint.toHex();  // Convert to hex
+                const stealthAddress = ethers.computeAddress('0x' + stealthPubKey);  // Convert to Ethereum address
+                stPk = stealthAddress
+                console.log('👻Stealth Address:', stealthAddress);
+                signatureSpan.innerHTML += `<br><br>Stealth address: ${stealthAddress}`;
+
+                return { stealthAddress, sharedSecret }
+            } catch (error) {
+                console.error(error);
+                status.textContent = `Error: ${error.message}`;
+            }
+
         }
 
-        // The message to sign
-        const message = 'create stealth address';
 
-        // Convert the message to a hex string (required by MetaMask)
-        // const messageHex = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
+        // -----------------------------------------
+        // NEW STEALTH ADDRESS FUNCTIONS
+        // -----------------------------------------
+        async function generateSharedSecret(signer, recipientPublicKey) {
+            // Convert recipient's public key to a message format
+            const message = ethers.keccak256(recipientPublicKey); // Hash the public key
 
-        // Convert the message to a hex string using TextEncoder
-        const encoder = new TextEncoder();
-        const uint8Array = encoder.encode(message);
-        const messageHex = `0x${Array.from(uint8Array).map(byte => byte.toString(16).padStart(2, '0')).join('')}`;
+            // Sign the message using MetaMask
+            const signature = await signer.signMessage(ethers.getBytes(message));
+            console.log('Signature:', signature);
 
-        // Request the user to sign the message
-        const signature = await ethereum.request({
-          method: 'personal_sign',
-          params: [messageHex, currentAccount],
-        });
+            // Extract the shared secret from the signature
+            const sharedSecret = ethers.keccak256(signature);
+            console.log('Shared Secret:', sharedSecret);
 
-        // Display the signature
-        signatureSpan.textContent = signature;
-        signatureDisplay.style.display = 'block';
-        status.textContent = 'Message signed successfully!';
-      } catch (error) {
-        console.error(error);
-        status.textContent = `Error: ${error.message}`;
-      }
-    }
+            return sharedSecret;
+        }
+
+
+        async function computeStealthAddress(sharedSecret, recipientPublicKey) {
+            // Hash the shared secret
+            const hashedSecret = ethers.keccak256(sharedSecret).slice(0, 42);
+
+            // Multiply the hash by the generator point (G)
+            const G = secp.ProjectivePoint.BASE; // Generator point G
+            const hsBigInt = BigInt(hashedSecret); // Convert to BigInt
+            const hsPoint = G.multiply(hsBigInt); // hs * G
+
+            // Add the recipient's public key
+            const recipientPoint = secp.ProjectivePoint.fromHex(recipientPublicKey);
+            const stealthPubPoint = hsPoint.add(recipientPoint); // hs * G + recipient's public key
+
+            // Convert the resulting point to an Ethereum address
+            const stealthPubKey = stealthPubPoint.toHex(); // Convert to hex
+            const stealthAddress = ethers.computeAddress('0x' + stealthPubKey); // Convert to Ethereum address
+            console.log('Stealth Address:', stealthAddress);
+
+            return stealthAddress;
+        }
+
+        async function createStealthAddressWithMetamask() {
+            console.log('🦊🦊🦊 createStealthAddressWithMetamask()')
+            try {
+                // Step 1: Get the user's public key
+                const recipientPublicKey = await getPublicKeyFromMetaMask();
+
+                // alert(recipientPublicKey)
+
+                // Step 2: Generate the stealth address
+                // const stealthAddress = await generateStealthAddressWithMetaMask('03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c');
+
+                console.log('Stealth Address for Donations:', stealthAddress);
+                return stealthAddress;
+            } catch (error) {
+                console.error('Error setting up stealth donations:', error);
+            }
+        }
+
+
+        async function getPublicKeyFromMetaMask(bobPublicKey) {
+            console.log('getPublicKeyFromMetaMask()')
+            if (!window.ethereum) {
+                throw new Error('MetaMask is not installed!');
+            }
+
+            // Step 1: Connect to MetaMask
+            const provider = new ethers.BrowserProvider(window.ethereum);/// OLD METHOD
+            const signer = await provider.getSigner();
+            const address = await signer.getAddress();
+            console.log('Connected to MetaMask account (OLD METHOD 🦖 🦖):', address);
+
+            // ---
+            // Step 2: Define a message to sign
+            // const message = 'Sign this message to generate your public key for stealth donations.';
+            // msga = message;
+            // const messageBytes = ethers.getBytes(ethers.id(message)); // Hash the message
+            // msgb = messageBytes
+
+
+            // ---
+            // VARIATION
+
+            if (!/^[0-9a-fA-F]+$/.test(bobPublicKey)) {
+                bobPublicKey = "03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c";
+            }
+
+
+            // ------
+            const bobPublicKeyHexed = `0x${bobPublicKey}`;
+            console.log('bobPublicKeyHexed: ', bobPublicKeyHexed, bobPublicKey)
+            // 1. Alice uses MetaMask to sign a message containing Bob's public key (B):
+            const message = ethers.solidityPacked(["bytes"], [bobPublicKeyHexed]);
+            console.log('message:', message)
+            let hexedMessage = hexer(message);
+            hmmsg = hexedMessage
+            let params = [hexedMessage, currentAccount];
+
+            // // Request the user to sign the message
+            // const ethereummmsdk = mmsdk.getProvider()
+            // const signature = await ethereummmsdk.request({
+            //     method: 'personal_sign',//Prepends a safe prefix
+            //     params: [hexedMessage, currentAccount],//v1 messageHex. recupera bien la address
+            //     params: params,//v1 messageHex. recupera bien la address
+            //     // params: [message, currentAccount],//v1 messageHex. recupera bien la address
+            // });
+            // ssig=signature
+            // console.log('Signature:', signature);
+
+
+
+            // [[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]
+            // Step 3: Request the user to sign the message
+            const signature = await signer.signMessage(hexedMessage);
+            console.log('Signature:', signature);
+            sig2 = signature;
+
+            // ---
+            // Step 4: Recover the public key from the signature
+
+            const recoveredAddress = ethers.verifyMessage(hexedMessage, signature);//ok!!!
+            console.log(' Recovered Address:', recoveredAddress);
+
+            // Optional: Verify the recovered address matches the signer's address
+            if (recoveredAddress !== address) {
+                throw new Error('Recovered address does not match signer address!');
+            }
+            // ---
+
+            // Step 5: Derive the public key 
+            const publicKey = await derivePublicKeyFromSignature(signature, hexedMessage);
+            console.log('Recovered Public Key:', publicKey);
+
+            // let verifyAddr2 =  await deriveAddressFromPublicKey(publicKey);
+            //     console.warn('Verified address v2 from Public Key:', verifyAddr2);
+
+
+
+            return publicKey;
+        }
+
+        async function derivePubkey(message, signature) {
+
+            // ATENCIO: Ethereum signatures use a specific hashing process for messages. When signing with personal_sign, the message is 
+            // prefixed with \x19Ethereum Signed Message:\n<length> before hashing.
+
+
+            // Hash the message (keccak256 hash of the message)
+            const messageHash = ethers.keccak256(ethers.toUtf8Bytes(message));
+
+            // Convert the signature to bytes format
+            const sigBytes = ethers.getBytes(signature);
+
+            // Split the signature into `r`, `s`, and `v` components
+            const r = sigBytes.slice(0, 32);
+            const s = sigBytes.slice(32, 64);
+            const v = sigBytes[64];
+
+
+
+            // ---
+
+            // Convert the message hash to Uint8Array (remove '0x' prefix)
+            const messageHashBytes = ethers.getBytes(messageHash);
+
+            // Adjust `v` to match secp256k1's expected range (0 or 1)
+            const recoveryBit = v - 27;
+
+            // Recover the public key
+            const publicKey = secp.Signature.fromCompact(sigBytes.slice(0, 64))
+                .addRecoveryBit(recoveryBit)
+                .recoverPublicKey(messageHashBytes);
+            // ---
+
+            puk = publicKey
+
+            const publicKeyHex = publicKey.toHex();  // Convert to hex
+            const originalAddress = ethers.computeAddress('0x' + publicKeyHex);  // Convert to Ethereum address
+            console.warn('👩‍🎤 ALICE Address (from pubKey):', originalAddress);
+
+            // Convert the public key to a compressed format (optional)
+            const compressedPublicKey = `0x${publicKeyHex}`;
+            cpuk = compressedPublicKey
+            console.warn("Public Key (Compressed):", compressedPublicKey);
+
+            return compressedPublicKey;
+        }
+
+        async function derivePublicKeyFromSignature(message, signature) {
+            try {
+                // Step 1: Hash the message using Keccak-256
+                const messageHash = ethers.id(message); // Hash the message
+
+                // Step 2: Parse the signature into its components (r, s, v)
+                const sig = ethers.Signature.from(signature); // Parse the signature
+                const r = sig.r;
+                const s = sig.s;
+                const recoveryId = sig.v - 27; // Convert v (27/28) to recovery ID (0/1)
+
+                // Step 3: Recover the public key
+                const publicKey = ethers.SigningKey.recoverPublicKey(messageHash, {
+                    r,
+                    s,
+                    v: recoveryId + 27, // Convert recoveryId back to v
+                });
+                console.log('Recovered Public Key:', publicKey);
+                return publicKey;
+
+                // Step 4: Derive the Ethereum address from the public key
+                // const address = getAddressFromPublicKey(publicKey);
+                // console.log('Derived Ethereum Address:', address);
+
+                // return address;
+            } catch (error) {
+                console.error('Error recovering address from signature:', error);
+                throw error;
+            }
+        }
+
+        // Helper function to derive an Ethereum address from a public key
+        function getAddressFromPublicKey(publicKey) {
+            // Ensure the public key is valid
+            if (!publicKey.startsWith("0x")) {
+                publicKey = "0x" + publicKey; // Add '0x' prefix if missing
+            }
+
+            if (publicKey.length !== 132) {
+                throw new Error("Invalid public key length. Expected 64 bytes (uncompressed public key).");
+            }
+
+            // Remove the '0x' prefix and the first byte (0x04 for uncompressed keys)
+            const keyBytes = publicKey.slice(4); // Remove '0x04'
+
+            // Hash the public key using Keccak-256
+            const hashedKey = ethers.keccak256("0x" + keyBytes);
+
+            // Extract the last 20 bytes (40 hex characters)
+            const address = "0x" + hashedKey.slice(-40);
+
+            // Convert to a checksummed address
+            return ethers.getAddress(address);
+        }
+
+
+        // Function to derive an Ethereum address from a public key
+        // import { ethers } from 'ethers';
+
+        function deriveAddressFromPublicKey(publicKey) {
+            // Step 1: Ensure the public key is valid
+            if (!publicKey.startsWith("0x")) {
+                publicKey = "0x" + publicKey; // Add '0x' prefix if missing
+            }
+
+            // Step 2: Validate the public key length
+            if (publicKey.length !== 132) {
+                throw new Error("Invalid public key length. Expected 64 bytes (uncompressed public key).");
+            }
+
+            // Step 3: Remove the '0x' prefix and the first byte (0x04 for uncompressed keys)
+            const keyBytes = publicKey.slice(4); // Remove '0x04'
+
+            // Step 4: Hash the public key using Keccak-256
+            const hashedKey = ethers.keccak256("0x" + keyBytes);
+
+            // Step 5: Take the last 20 bytes (40 characters in hex)
+            const address = "0x" + hashedKey.slice(-40);
+
+            // Step 6: Convert to a checksummed address
+            return ethers.getAddress(address);
+        }
+
+
+
+
+        function getLast20Bytes(hexString) {
+            // Ensure the input is a valid hex string with '0x' prefix
+            if (!hexString.startsWith("0x")) {
+                throw new Error("Invalid hex string: must start with '0x'");
+            }
+
+            // Ensure the hex string is long enough to extract 20 bytes
+            if (hexString.length < 42) { // 2 characters for '0x' + 40 characters for 20 bytes
+                throw new Error("Hex string is too short to extract 20 bytes");
+            }
+
+            // Extract the last 40 characters (20 bytes)
+            const last20Bytes = "0x" + hexString.slice(-40); // Take the last 40 characters
+            return last20Bytes;
+        }
 
 
         // Add event listener to the button
-        connectButton.addEventListener('click', connectMetaMask);
-    signButton.addEventListener('click', signMessage);
+        connectButton.addEventListener('click', handleConnectAndSign);
+        signButton.addEventListener('click', createProxyAddress);
+        createOwnStealthAddressButton.addEventListener('click', createStealthAddressWithMetamask);
 
 
 
-  </script>
+
+        // ----------------------------
+        // EXTRA UTILS (TEST)
+        // ----------------------------
+
+        // Helper function to convert a hex string to a Uint8Array
+        function hexToBytes(hex) {
+            const bytes = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < hex.length; i += 2) {
+                bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+            }
+            return bytes;
+        }
+
+        // Helper function to convert a Uint8Array to a hex string
+        function bytesToHex(bytes) {
+            return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        function uncompressPubKey(comppressedPubkey) {
+
+            // Compressed public key (hex string)
+            const compressedPublicKeyHex = '03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c';
+
+            // Step 1: Convert the compressed public key hex string into a Uint8Array
+            const compressedPublicKeyBytes = hexToBytes(compressedPublicKeyHex);
+
+            // Step 2: Decompress the public key using @noble/secp256k1
+            // const point = Point.fromHex(compressedPublicKeyBytes); // This creates a Point object from the compressed key
+            const point = secp.ProjectivePoint.fromHex(compressedPublicKeyBytes);  // Bob's public key point
+
+            // Step 3: Get the uncompressed public key as a Uint8Array
+            const uncompressedPublicKeyBytes = point.toRawBytes(false); // false means uncompressed format
+
+            // Step 4: Convert the uncompressed public key back to a hex string
+            const uncompressedPublicKeyHex = bytesToHex(uncompressedPublicKeyBytes);
+
+            console.log('Uncompressed Public Key:', uncompressedPublicKeyHex);
+        }
+
+        function compressPubKey(publicKey) {
+            if (!(publicKey instanceof Uint8Array)) {
+                throw new Error("Public key must be a Uint8Array");
+            }
+
+            // Validate length for uncompressed (65 bytes) or compressed (33 bytes)
+            if (![65, 33].includes(publicKey.length)) {
+                throw new Error("Invalid public key length");
+            }
+
+            // Compress the public key
+            const compressed = secp.ProjectivePoint.fromHex(publicKey).toHex();
+            validateCompressedPublicKey(compressed)
+            // ensureHexPrefix(compressed,66)
+            return compressed;
+        }
+
+        function validateCompressedPublicKey(publicKeyHex) {
+            if (publicKeyHex.startsWith("0x")) {
+                // Remove the '0x' prefix for validation
+                publicKeyHex = publicKeyHex.slice(2);
+            }
+
+            // Validate the data length (66 characters for a compressed public key)
+            if (publicKeyHex.length !== 66) {
+                throw new Error("Invalid compressed public key length. Expected 66 characters.");
+            }
+
+            // Validate the prefix byte
+            const prefix = publicKeyHex.slice(0, 2);
+            if (prefix !== "02" && prefix !== "03") {
+                throw new Error("Invalid compressed public key: Prefix must be 0x02 or 0x03");
+            }
+
+            console.log("The public key is valid and compressed.");
+        }
+
+
+        // Function to derive an address on demand
+        async function deriveAddressWallet(mnemonic, index) {
+            const basePath = "m/44'/60'/0'/0/";
+            const path = `${basePath}${index}`;
+            const derivedNode = ethers.HDNodeWallet.fromPhrase(mnemonic, path);
+            return derivedNode
+        }
+
+        async function aliceWallet() {
+            let aliceMnemonic = localStorage.getItem('aliceMnemonic');
+            if (!aliceMnemonic) {
+                console.error('NO aliceMnemonic  in localStorage!');
+
+                const randmnemonic = await ethers.HDNodeWallet.createRandom()
+                aliceMnemonic = randmnemonic.mnemonic.phrase;
+                localStorage.setItem('aliceMnemonic', aliceMnemonic);
+
+            } else {
+                console.log('aliceMnemonic is in localStorage!');
+
+            }
+            let aliceWall = deriveAddressWallet(aliceMnemonic, 0)
+            return aliceWall
+        }
+
+
+    </script>
 </body>
+
 </html>

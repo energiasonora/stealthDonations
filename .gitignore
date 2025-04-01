@@ -3,6 +3,7 @@
 .parcelrc
 README.md
 dist/
+src/TRASH
 node_modules/
 yarn-error.log
 yarn.lock

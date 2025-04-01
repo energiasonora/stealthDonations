@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign hash</title>
+    <!-- <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script> -->
+    
+    <style>
+        body {
+            background-color: black;
+            color: green;
+        }
+        #result{
+            word-wrap: break-word;
+
+        }
+        </style>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.12.0/ethers.umd.min.js" type="application/javascript"></script>
+    <script>
+// Ejemplo private key ganache
+// ACCOUNT ADDRESS
+// 0xEce6CDC307a55B2c4fE5745208Cea58AB1ec1111
+// PRIVATE KEY
+// 0xc1f2c5c2b4267c92c71fbb092cc241a64c7a9c3a599907eb69ed5e7038175ad4
+const privateKey = '0xc1f2c5c2b4267c92c71fbb092cc241a64c7a9c3a599907eb69ed5e7038175ad4';
+const wallet = new ethers.Wallet(privateKey);
+w=wallet;
+console.log('wallet:', wallet);
+
+
+      
+        async function signHash() {
+
+            console.log('signHash()');
+            let h =  document.getElementById('hash').value
+const signedMessage = await wallet.signMessage(h);
+console.log('signedMessage()',signedMessage);
+document.getElementById('result').innerHTML= signedMessage;
+
+        };
+
+    </script>
+</head>
+
+<body>
+    <h1>SIGN HASH</h1>
+    <div>
+        <p>Example with PK for address 0xEce6CDC307a55B2c4fE5745208Cea58AB1ec1111</p>
+        <label for="hash">paste your HASH here:</label>
+        <textarea type="text" id="hash"></textarea>
+    </div>
+<button onclick="signHash()">SIGN</button>
+    <div id="result"></div>
+</body>
+
+</html>

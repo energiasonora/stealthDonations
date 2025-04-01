@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Stealth Donations</title>
+    <!-- Include Pico CSS -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"> -->
+    <!-- <link rel="stylesheet" href="css/pico@1.min.css" /> -->
+    <!-- pico v2 -->
+    <link rel="stylesheet" href="index.a089bd87.css">
+    <script src="index.80bf872c.js"></script><script src="index.6f3b47d2.js"></script><script src="index.c8206c68.js"></script>
+    <script src="index.6e2c0198.js"></script>
+
+    <!-- Include MetaMask SDK -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@metamask/sdk@latest/dist/browser/metamask-sdk.min.js"></script> -->
+</head>
+
+<body>
+    <main class="container">
+        <!-- <h1>MetaMask Stealth Donations </h1>
+        <p>Given Bob's public key: 03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c</p> -->
+        <p id="status">Status: Not Connected</p>
+        <button id="connectButton" class="contrast">Connect to MetaMask</button>
+        <p id="accountDisplay" style="display: none">Connected Account: <span id="account"></span></p>
+        <!-- </main> -->
+
+        <!-- <main class="container"> -->
+        <h1>Sign to create your Stealth Address (proxy address)</h1>
+        <!-- <p id="status">Status: Not Connected</p> -->
+        <!-- <button id="connectButton" class="contrast">Connect to MetaMask</button> -->
+        <!-- <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p> -->
+        <button id="signButton" class="secondary" style="display: none">Create proxy address</button>
+        <p id="signatureDisplay" style="display: none">Signature: <span id="signature"></span></p>
+
+
+        <button id="createOwnStealthAddressButton" class="secondary" style="display: none">Create your stealth proxy
+            address</button>
+        <p id="stealthAddressDisplay" style="display: none">Stealth Address: <span id="stealthAddress"></span></p>
+
+    </main>
+
+    <script>// modules are defined as an array
+// [ module function, map of requires ]
+//
+// map of requires is short require name -> numeric require
+//
+// anything defined in a previous bundle is accessed via the
+// orig method which is the require for previous bundles
+
+(function (modules, entry, mainEntry, parcelRequireName, globalName) {
+  /* eslint-disable no-undef */
+  var globalObject =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof self !== 'undefined'
+      ? self
+      : typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+      ? global
+      : {};
+  /* eslint-enable no-undef */
+
+  // Save the require from previous bundle to this closure if any
+  var previousRequire =
+    typeof globalObject[parcelRequireName] === 'function' &&
+    globalObject[parcelRequireName];
+
+  var cache = previousRequire.cache || {};
+  // Do not use `require` to prevent Webpack from trying to bundle this call
+  var nodeRequire =
+    typeof module !== 'undefined' &&
+    typeof module.require === 'function' &&
+    module.require.bind(module);
+
+  function newRequire(name, jumped) {
+    if (!cache[name]) {
+      if (!modules[name]) {
+        // if we cannot find the module within our internal map or
+        // cache jump to the current global require ie. the last bundle
+        // that was added to the page.
+        var currentRequire =
+          typeof globalObject[parcelRequireName] === 'function' &&
+          globalObject[parcelRequireName];
+        if (!jumped && currentRequire) {
+          return currentRequire(name, true);
+        }
+
+        // If there are other bundles on this page the require from the
+        // previous one is saved to 'previousRequire'. Repeat this as
+        // many times as there are bundles until the module is found or
+        // we exhaust the require chain.
+        if (previousRequire) {
+          return previousRequire(name, true);
+        }
+
+        // Try the node require function if it exists.
+        if (nodeRequire && typeof name === 'string') {
+          return nodeRequire(name);
+        }
+
+        var err = new Error("Cannot find module '" + name + "'");
+        err.code = 'MODULE_NOT_FOUND';
+        throw err;
+      }
+
+      localRequire.resolve = resolve;
+      localRequire.cache = {};
+
+      var module = (cache[name] = new newRequire.Module(name));
+
+      modules[name][0].call(
+        module.exports,
+        localRequire,
+        module,
+        module.exports,
+        this
+      );
+    }
+
+    return cache[name].exports;
+
+    function localRequire(x) {
+      var res = localRequire.resolve(x);
+      return res === false ? {} : newRequire(res);
+    }
+
+    function resolve(x) {
+      var id = modules[name][1][x];
+      return id != null ? id : x;
+    }
+  }
+
+  function Module(moduleName) {
+    this.id = moduleName;
+    this.bundle = newRequire;
+    this.exports = {};
+  }
+
+  newRequire.isParcelRequire = true;
+  newRequire.Module = Module;
+  newRequire.modules = modules;
+  newRequire.cache = cache;
+  newRequire.parent = previousRequire;
+  newRequire.register = function (id, exports) {
+    modules[id] = [
+      function (require, module) {
+        module.exports = exports;
+      },
+      {},
+    ];
+  };
+
+  Object.defineProperty(newRequire, 'root', {
+    get: function () {
+      return globalObject[parcelRequireName];
+    },
+  });
+
+  globalObject[parcelRequireName] = newRequire;
+
+  for (var i = 0; i < entry.length; i++) {
+    newRequire(entry[i]);
+  }
+
+  if (mainEntry) {
+    // Expose entry point to Node, AMD or browser globals
+    // Based on https://github.com/ForbesLindesay/umd/blob/master/template.js
+    var mainExports = newRequire(mainEntry);
+
+    // CommonJS
+    if (typeof exports === 'object' && typeof module !== 'undefined') {
+      module.exports = mainExports;
+
+      // RequireJS
+    } else if (typeof define === 'function' && define.amd) {
+      define(function () {
+        return mainExports;
+      });
+
+      // <script>
+    } else if (globalName) {
+      this[globalName] = mainExports;
+    }
+  }
+})({"bpk4l":[function(require,module,exports) {
+var global = arguments[3];
+var HMR_HOST = null;
+var HMR_PORT = null;
+var HMR_SECURE = false;
+var HMR_ENV_HASH = "d6ea1d42532a7575";
+module.bundle.HMR_BUNDLE_ID = "e196808b8ea76571";
+"use strict";
+/* global HMR_HOST, HMR_PORT, HMR_ENV_HASH, HMR_SECURE, chrome, browser, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
+import type {
+  HMRAsset,
+  HMRMessage,
+} from '@parcel/reporter-dev-server/src/HMRServer.js';
+interface ParcelRequire {
+  (string): mixed;
+  cache: {|[string]: ParcelModule|};
+  hotData: {|[string]: mixed|};
+  Module: any;
+  parent: ?ParcelRequire;
+  isParcelRequire: true;
+  modules: {|[string]: [Function, {|[string]: string|}]|};
+  HMR_BUNDLE_ID: string;
+  root: ParcelRequire;
+}
+interface ParcelModule {
+  hot: {|
+    data: mixed,
+    accept(cb: (Function) => void): void,
+    dispose(cb: (mixed) => void): void,
+    // accept(deps: Array<string> | string, cb: (Function) => void): void,
+    // decline(): void,
+    _acceptCallbacks: Array<(Function) => void>,
+    _disposeCallbacks: Array<(mixed) => void>,
+  |};
+}
+interface ExtensionContext {
+  runtime: {|
+    reload(): void,
+    getURL(url: string): string;
+    getManifest(): {manifest_version: number, ...};
+  |};
+}
+declare var module: {bundle: ParcelRequire, ...};
+declare var HMR_HOST: string;
+declare var HMR_PORT: string;
+declare var HMR_ENV_HASH: string;
+declare var HMR_SECURE: boolean;
+declare var chrome: ExtensionContext;
+declare var browser: ExtensionContext;
+declare var __parcel__import__: (string) => Promise<void>;
+declare var __parcel__importScripts__: (string) => Promise<void>;
+declare var globalThis: typeof self;
+declare var ServiceWorkerGlobalScope: Object;
+*/ var OVERLAY_ID = "__parcel__error__overlay__";
+var OldModule = module.bundle.Module;
+function Module(moduleName) {
+    OldModule.call(this, moduleName);
+    this.hot = {
+        data: module.bundle.hotData[moduleName],
+        _acceptCallbacks: [],
+        _disposeCallbacks: [],
+        accept: function(fn) {
+            this._acceptCallbacks.push(fn || function() {});
+        },
+        dispose: function(fn) {
+            this._disposeCallbacks.push(fn);
+        }
+    };
+    module.bundle.hotData[moduleName] = undefined;
+}
+module.bundle.Module = Module;
+module.bundle.hotData = {};
+var checkedAssets /*: {|[string]: boolean|} */ , assetsToDispose /*: Array<[ParcelRequire, string]> */ , assetsToAccept /*: Array<[ParcelRequire, string]> */ ;
+function getHostname() {
+    return HMR_HOST || (location.protocol.indexOf("http") === 0 ? location.hostname : "localhost");
+}
+function getPort() {
+    return HMR_PORT || location.port;
+}
+// eslint-disable-next-line no-redeclare
+var parent = module.bundle.parent;
+if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== "undefined") {
+    var hostname = getHostname();
+    var port = getPort();
+    var protocol = HMR_SECURE || location.protocol == "https:" && ![
+        "localhost",
+        "127.0.0.1",
+        "0.0.0.0"
+    ].includes(hostname) ? "wss" : "ws";
+    var ws;
+    try {
+        ws = new WebSocket(protocol + "://" + hostname + (port ? ":" + port : "") + "/");
+    } catch (err) {
+        if (err.message) console.error(err.message);
+        ws = {};
+    }
+    // Web extension context
+    var extCtx = typeof browser === "undefined" ? typeof chrome === "undefined" ? null : chrome : browser;
+    // Safari doesn't support sourceURL in error stacks.
+    // eval may also be disabled via CSP, so do a quick check.
+    var supportsSourceURL = false;
+    try {
+        (0, eval)('throw new Error("test"); //# sourceURL=test.js');
+    } catch (err) {
+        supportsSourceURL = err.stack.includes("test.js");
+    }
+    // $FlowFixMe
+    ws.onmessage = async function(event /*: {data: string, ...} */ ) {
+        checkedAssets = {} /*: {|[string]: boolean|} */ ;
+        assetsToAccept = [];
+        assetsToDispose = [];
+        var data /*: HMRMessage */  = JSON.parse(event.data);
+        if (data.type === "update") {
+            // Remove error overlay if there is one
+            if (typeof document !== "undefined") removeErrorOverlay();
+            let assets = data.assets.filter((asset)=>asset.envHash === HMR_ENV_HASH);
+            // Handle HMR Update
+            let handled = assets.every((asset)=>{
+                return asset.type === "css" || asset.type === "js" && hmrAcceptCheck(module.bundle.root, asset.id, asset.depsByBundle);
+            });
+            if (handled) {
+                console.clear();
+                // Dispatch custom event so other runtimes (e.g React Refresh) are aware.
+                if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") window.dispatchEvent(new CustomEvent("parcelhmraccept"));
+                await hmrApplyUpdates(assets);
+                // Dispose all old assets.
+                let processedAssets = {} /*: {|[string]: boolean|} */ ;
+                for(let i = 0; i < assetsToDispose.length; i++){
+                    let id = assetsToDispose[i][1];
+                    if (!processedAssets[id]) {
+                        hmrDispose(assetsToDispose[i][0], id);
+                        processedAssets[id] = true;
+                    }
+                }
+                // Run accept callbacks. This will also re-execute other disposed assets in topological order.
+                processedAssets = {};
+                for(let i = 0; i < assetsToAccept.length; i++){
+                    let id = assetsToAccept[i][1];
+                    if (!processedAssets[id]) {
+                        hmrAccept(assetsToAccept[i][0], id);
+                        processedAssets[id] = true;
+                    }
+                }
+            } else fullReload();
+        }
+        if (data.type === "error") {
+            // Log parcel errors to console
+            for (let ansiDiagnostic of data.diagnostics.ansi){
+                let stack = ansiDiagnostic.codeframe ? ansiDiagnostic.codeframe : ansiDiagnostic.stack;
+                console.error("\uD83D\uDEA8 [parcel]: " + ansiDiagnostic.message + "\n" + stack + "\n\n" + ansiDiagnostic.hints.join("\n"));
+            }
+            if (typeof document !== "undefined") {
+                // Render the fancy html overlay
+                removeErrorOverlay();
+                var overlay = createErrorOverlay(data.diagnostics.html);
+                // $FlowFixMe
+                document.body.appendChild(overlay);
+            }
+        }
+    };
+    ws.onerror = function(e) {
+        if (e.message) console.error(e.message);
+    };
+    ws.onclose = function() {
+        console.warn("[parcel] \uD83D\uDEA8 Connection to the HMR server was lost");
+    };
+}
+function removeErrorOverlay() {
+    var overlay = document.getElementById(OVERLAY_ID);
+    if (overlay) {
+        overlay.remove();
+        console.log("[parcel] \u2728 Error resolved");
+    }
+}
+function createErrorOverlay(diagnostics) {
+    var overlay = document.createElement("div");
+    overlay.id = OVERLAY_ID;
+    let errorHTML = '<div style="background: black; opacity: 0.85; font-size: 16px; color: white; position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; padding: 30px; font-family: Menlo, Consolas, monospace; z-index: 9999;">';
+    for (let diagnostic of diagnostics){
+        let stack = diagnostic.frames.length ? diagnostic.frames.reduce((p, frame)=>{
+            return `${p}
+<a href="/__parcel_launch_editor?file=${encodeURIComponent(frame.location)}" style="text-decoration: underline; color: #888" onclick="fetch(this.href); return false">${frame.location}</a>
+${frame.code}`;
+        }, "") : diagnostic.stack;
+        errorHTML += `
+      <div>
+        <div style="font-size: 18px; font-weight: bold; margin-top: 20px;">
+          \u{1F6A8} ${diagnostic.message}
+        </div>
+        <pre>${stack}</pre>
+        <div>
+          ${diagnostic.hints.map((hint)=>"<div>\uD83D\uDCA1 " + hint + "</div>").join("")}
+        </div>
+        ${diagnostic.documentation ? `<div>\u{1F4DD} <a style="color: violet" href="${diagnostic.documentation}" target="_blank">Learn more</a></div>` : ""}
+      </div>
+    `;
+    }
+    errorHTML += "</div>";
+    overlay.innerHTML = errorHTML;
+    return overlay;
+}
+function fullReload() {
+    if ("reload" in location) location.reload();
+    else if (extCtx && extCtx.runtime && extCtx.runtime.reload) extCtx.runtime.reload();
+}
+function getParents(bundle, id) /*: Array<[ParcelRequire, string]> */ {
+    var modules = bundle.modules;
+    if (!modules) return [];
+    var parents = [];
+    var k, d, dep;
+    for(k in modules)for(d in modules[k][1]){
+        dep = modules[k][1][d];
+        if (dep === id || Array.isArray(dep) && dep[dep.length - 1] === id) parents.push([
+            bundle,
+            k
+        ]);
+    }
+    if (bundle.parent) parents = parents.concat(getParents(bundle.parent, id));
+    return parents;
+}
+function updateLink(link) {
+    var href = link.getAttribute("href");
+    if (!href) return;
+    var newLink = link.cloneNode();
+    newLink.onload = function() {
+        if (link.parentNode !== null) // $FlowFixMe
+        link.parentNode.removeChild(link);
+    };
+    newLink.setAttribute("href", // $FlowFixMe
+    href.split("?")[0] + "?" + Date.now());
+    // $FlowFixMe
+    link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+var cssTimeout = null;
+function reloadCSS() {
+    if (cssTimeout) return;
+    cssTimeout = setTimeout(function() {
+        var links = document.querySelectorAll('link[rel="stylesheet"]');
+        for(var i = 0; i < links.length; i++){
+            // $FlowFixMe[incompatible-type]
+            var href /*: string */  = links[i].getAttribute("href");
+            var hostname = getHostname();
+            var servedFromHMRServer = hostname === "localhost" ? new RegExp("^(https?:\\/\\/(0.0.0.0|127.0.0.1)|localhost):" + getPort()).test(href) : href.indexOf(hostname + ":" + getPort());
+            var absolute = /^https?:\/\//i.test(href) && href.indexOf(location.origin) !== 0 && !servedFromHMRServer;
+            if (!absolute) updateLink(links[i]);
+        }
+        cssTimeout = null;
+    }, 50);
+}
+function hmrDownload(asset) {
+    if (asset.type === "js") {
+        if (typeof document !== "undefined") {
+            let script = document.createElement("script");
+            script.src = asset.url + "?t=" + Date.now();
+            if (asset.outputFormat === "esmodule") script.type = "module";
+            return new Promise((resolve, reject)=>{
+                var _document$head;
+                script.onload = ()=>resolve(script);
+                script.onerror = reject;
+                (_document$head = document.head) === null || _document$head === void 0 || _document$head.appendChild(script);
+            });
+        } else if (typeof importScripts === "function") {
+            // Worker scripts
+            if (asset.outputFormat === "esmodule") return import(asset.url + "?t=" + Date.now());
+            else return new Promise((resolve, reject)=>{
+                try {
+                    importScripts(asset.url + "?t=" + Date.now());
+                    resolve();
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+    }
+}
+async function hmrApplyUpdates(assets) {
+    global.parcelHotUpdate = Object.create(null);
+    let scriptsToRemove;
+    try {
+        // If sourceURL comments aren't supported in eval, we need to load
+        // the update from the dev server over HTTP so that stack traces
+        // are correct in errors/logs. This is much slower than eval, so
+        // we only do it if needed (currently just Safari).
+        // https://bugs.webkit.org/show_bug.cgi?id=137297
+        // This path is also taken if a CSP disallows eval.
+        if (!supportsSourceURL) {
+            let promises = assets.map((asset)=>{
+                var _hmrDownload;
+                return (_hmrDownload = hmrDownload(asset)) === null || _hmrDownload === void 0 ? void 0 : _hmrDownload.catch((err)=>{
+                    // Web extension fix
+                    if (extCtx && extCtx.runtime && extCtx.runtime.getManifest().manifest_version == 3 && typeof ServiceWorkerGlobalScope != "undefined" && global instanceof ServiceWorkerGlobalScope) {
+                        extCtx.runtime.reload();
+                        return;
+                    }
+                    throw err;
+                });
+            });
+            scriptsToRemove = await Promise.all(promises);
+        }
+        assets.forEach(function(asset) {
+            hmrApply(module.bundle.root, asset);
+        });
+    } finally{
+        delete global.parcelHotUpdate;
+        if (scriptsToRemove) scriptsToRemove.forEach((script)=>{
+            if (script) {
+                var _document$head2;
+                (_document$head2 = document.head) === null || _document$head2 === void 0 || _document$head2.removeChild(script);
+            }
+        });
+    }
+}
+function hmrApply(bundle /*: ParcelRequire */ , asset /*:  HMRAsset */ ) {
+    var modules = bundle.modules;
+    if (!modules) return;
+    if (asset.type === "css") reloadCSS();
+    else if (asset.type === "js") {
+        let deps = asset.depsByBundle[bundle.HMR_BUNDLE_ID];
+        if (deps) {
+            if (modules[asset.id]) {
+                // Remove dependencies that are removed and will become orphaned.
+                // This is necessary so that if the asset is added back again, the cache is gone, and we prevent a full page reload.
+                let oldDeps = modules[asset.id][1];
+                for(let dep in oldDeps)if (!deps[dep] || deps[dep] !== oldDeps[dep]) {
+                    let id = oldDeps[dep];
+                    let parents = getParents(module.bundle.root, id);
+                    if (parents.length === 1) hmrDelete(module.bundle.root, id);
+                }
+            }
+            if (supportsSourceURL) // Global eval. We would use `new Function` here but browser
+            // support for source maps is better with eval.
+            (0, eval)(asset.output);
+            // $FlowFixMe
+            let fn = global.parcelHotUpdate[asset.id];
+            modules[asset.id] = [
+                fn,
+                deps
+            ];
+        } else if (bundle.parent) hmrApply(bundle.parent, asset);
+    }
+}
+function hmrDelete(bundle, id) {
+    let modules = bundle.modules;
+    if (!modules) return;
+    if (modules[id]) {
+        // Collect dependencies that will become orphaned when this module is deleted.
+        let deps = modules[id][1];
+        let orphans = [];
+        for(let dep in deps){
+            let parents = getParents(module.bundle.root, deps[dep]);
+            if (parents.length === 1) orphans.push(deps[dep]);
+        }
+        // Delete the module. This must be done before deleting dependencies in case of circular dependencies.
+        delete modules[id];
+        delete bundle.cache[id];
+        // Now delete the orphans.
+        orphans.forEach((id)=>{
+            hmrDelete(module.bundle.root, id);
+        });
+    } else if (bundle.parent) hmrDelete(bundle.parent, id);
+}
+function hmrAcceptCheck(bundle /*: ParcelRequire */ , id /*: string */ , depsByBundle /*: ?{ [string]: { [string]: string } }*/ ) {
+    if (hmrAcceptCheckOne(bundle, id, depsByBundle)) return true;
+    // Traverse parents breadth first. All possible ancestries must accept the HMR update, or we'll reload.
+    let parents = getParents(module.bundle.root, id);
+    let accepted = false;
+    while(parents.length > 0){
+        let v = parents.shift();
+        let a = hmrAcceptCheckOne(v[0], v[1], null);
+        if (a) // If this parent accepts, stop traversing upward, but still consider siblings.
+        accepted = true;
+        else {
+            // Otherwise, queue the parents in the next level upward.
+            let p = getParents(module.bundle.root, v[1]);
+            if (p.length === 0) {
+                // If there are no parents, then we've reached an entry without accepting. Reload.
+                accepted = false;
+                break;
+            }
+            parents.push(...p);
+        }
+    }
+    return accepted;
+}
+function hmrAcceptCheckOne(bundle /*: ParcelRequire */ , id /*: string */ , depsByBundle /*: ?{ [string]: { [string]: string } }*/ ) {
+    var modules = bundle.modules;
+    if (!modules) return;
+    if (depsByBundle && !depsByBundle[bundle.HMR_BUNDLE_ID]) {
+        // If we reached the root bundle without finding where the asset should go,
+        // there's nothing to do. Mark as "accepted" so we don't reload the page.
+        if (!bundle.parent) return true;
+        return hmrAcceptCheck(bundle.parent, id, depsByBundle);
+    }
+    if (checkedAssets[id]) return true;
+    checkedAssets[id] = true;
+    var cached = bundle.cache[id];
+    assetsToDispose.push([
+        bundle,
+        id
+    ]);
+    if (!cached || cached.hot && cached.hot._acceptCallbacks.length) {
+        assetsToAccept.push([
+            bundle,
+            id
+        ]);
+        return true;
+    }
+}
+function hmrDispose(bundle /*: ParcelRequire */ , id /*: string */ ) {
+    var cached = bundle.cache[id];
+    bundle.hotData[id] = {};
+    if (cached && cached.hot) cached.hot.data = bundle.hotData[id];
+    if (cached && cached.hot && cached.hot._disposeCallbacks.length) cached.hot._disposeCallbacks.forEach(function(cb) {
+        cb(bundle.hotData[id]);
+    });
+    delete bundle.cache[id];
+}
+function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
+    // Execute the module.
+    bundle(id);
+    // Run the accept callbacks in the new version of the module.
+    var cached = bundle.cache[id];
+    if (cached && cached.hot && cached.hot._acceptCallbacks.length) cached.hot._acceptCallbacks.forEach(function(cb) {
+        var assetsToAlsoAccept = cb(function() {
+            return getParents(module.bundle.root, id);
+        });
+        if (assetsToAlsoAccept && assetsToAccept.length) {
+            assetsToAlsoAccept.forEach(function(a) {
+                hmrDispose(a[0], a[1]);
+            });
+            // $FlowFixMe[method-unbinding]
+            assetsToAccept.push.apply(assetsToAccept, assetsToAlsoAccept);
+        }
+    });
+}
+
+},{}],"ehcyK":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+var _browserStringHexer = require("browser-string-hexer");
+var _browserStringHexerDefault = parcelHelpers.interopDefault(_browserStringHexer);
+var _secp256K1 = require("@noble/secp256k1");
+// import { sha256 } from '@noble/hashes/sha256';
+// window.sha256 = sha256;
+// import { utf8ToBytes } from '@noble/hashes/utils';
+// window.utf8ToBytes = utf8ToBytes;
+var _sdk = require("@metamask/sdk");
+window.hexer = (0, _browserStringHexerDefault.default);
+window.getPublicKey = (0, _secp256K1.getPublicKey);
+window.utils = (0, _secp256K1.utils);
+window.secp = _secp256K1;
+window.MetaMaskSDK = (0, _sdk.MetaMaskSDK);
+
+},{"browser-string-hexer":"gnnkz","@noble/secp256k1":"kJGEF","@metamask/sdk":"8rhgp","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || Object.prototype.hasOwnProperty.call(dest, key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}]},["bpk4l","ehcyK"], "ehcyK", "parcelRequiree3bb")
+
+</script>
+    <script>window.globalOptionsList = [
+    {
+        "INFURA_API_KEY": "b17405e634bd40308be3eb4fa2485c9a",
+        "ALCHEMY_API_KEY": "X048z0PxuDPd5vbTiKLbWJgogG9Tvd2I",
+        "IPFS_GATEWAY": "https://gateway.lighthouse.storage/ipfs/",
+        "POLYBASE_DB": "https://explorer.testnet.polybase.xyz/studio/pk%2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3%2FSTARKID/collections/STARKID",
+        "ZK_PUBKEY": "2F0x97eab0841786aeae14135af5e26750626e46e2e15a412b6a319dd2ce7f323c805d67fcfb0f8ea1f27959e486e11e49926fbf4b1c2b9252daa20283e200e3b1b3"
+    }
+];
+// DOM Elements
+const connectButton = document.getElementById("connectButton");
+const status = document.getElementById("status");
+const accountDisplay = document.getElementById("accountDisplay");
+const accountSpan = document.getElementById("account");
+// DOM Elements
+const signButton = document.getElementById("signButton");
+const signatureDisplay = document.getElementById("signatureDisplay");
+const signatureSpan = document.getElementById("signature");
+const createOwnStealthAddressButton = document.getElementById("createOwnStealthAddressButton");
+const stealthAddressDisplay = document.getElementById("stealthAddressDisplay");
+const stealthAddressSpan = document.getElementById("stealthAddress");
+async function handleConnectAndSign() {
+    console.log("handleConnectAndSign");
+    const MMSDK = new MetaMaskSDK({
+        dappMetadata: {
+            name: "stealthDonations Dapp",
+            url: window.location.href
+        },
+        infuraAPIKey: globalOptionsList[0].INFURA_API_KEY
+    });
+    window.MMSDK = MMSDK;
+    // Connect and get accounts
+    const accounts = await MMSDK.connect();
+    console.log("accounts:", accounts);
+    // Update UI with connected account
+    if (accounts.length > 0) {
+        status.textContent = "Status: Connected";
+        currentAccount = accounts[0];
+        connectButton.style.display = "none";
+        accountSpan.textContent = accounts[0];
+        accountDisplay.style.display = "block";
+        signButton.style.display = "inline-block"; // Show the create sign button
+        createOwnStealthAddressButton.style.display = "inline-block"; // Show the create stealth address button
+    } else status.textContent = "Error: No accounts found.";
+    // Get provider for RPC requests
+    const provider = MMSDK.getProvider();
+    // Batch multiple RPC requests
+    const batchResults = await provider.request({
+        method: "metamask_batch",
+        params: [
+            {
+                method: "eth_accounts"
+            },
+            {
+                method: "eth_chainId"
+            }
+        ]
+    });
+    console.log("account:", batchResults[0][0]);
+    console.log("chaiId:", parseInt(batchResults[1], 16));
+    return;
+}
+const toHexString = (bytes)=>{
+    return Array.from(bytes, (byte)=>byte.toString(16).padStart(2, "0")).join("");
+};
+function removeHexPrefix(hexString) {
+    // Check if the hex string starts with '0x' and remove it
+    if (hexString.startsWith("0x")) return hexString.slice(2);
+    return hexString;
+}
+// METAMASK stAddr generator
+async function createProxyAddress() {
+    console.log("createProxyAddress()");
+    try {
+        if (!currentAccount) {
+            status.textContent = "Error: Please connect your wallet first.";
+            return;
+        }
+        // Step: The message to sign
+        const message = "create stealth address";
+        console.log("message:", message);
+        let hexedMessage = hexer(message);
+        console.log("mhex:", hexedMessage);
+        // 2. Derive the Shared Secret: Alice hashes the signature to derive hs:
+        let params = [
+            hexedMessage,
+            currentAccount
+        ];
+        // Request the user to sign the message
+        const ethereummmsdk = mmsdk.getProvider();
+        const signature = await ethereummmsdk.request({
+            method: "personal_sign",
+            params: params
+        });
+        ssig = signature;
+        console.log("Signature:", signature);
+        // ...............
+        // Step: recover the address from the signed message
+        const recoveredAddress = ethers.verifyMessage(message, signature); //ok!!!.recupera bie la address
+        console.warn("\u2705  \u26D3\uFE0F\u200D\uD83D\uDCA5 Recovered Address from signature:", recoveredAddress);
+        // ...............
+        // GET USER(ALICE) PUBKEY
+        const alicepublicKey = await derivePubkey(hexedMessage, signature);
+        alicepubkey = alicepublicKey;
+        console.log("alicepublicKey:", alicepublicKey);
+        let alicepublicKeyDehex = removeHexPrefix(alicepublicKey);
+        // ...............
+        // Display the signature
+        signatureSpan.textContent = signature;
+        signatureDisplay.style.display = "block";
+        status.textContent = "Message signed successfully!";
+        // 2 .Alice hashes the signature to derive hs:
+        const sharedSecret = ethers.keccak256(signature);
+        console.log("Shared Secret:", sharedSecret);
+        signatureSpan.innerHTML += `<br><br>Shared secret: ${sharedSecret}`;
+        //////////////////////////
+        // 3. Alice computes the stealth public key (stPk) using hs and Bob's public key (B):
+        // const stPk = hs * G + B; // Elliptic curve math
+        //////////////////////////
+        // A.Multiply hs by the curve generator point (G): 
+        const G = secp.ProjectivePoint.BASE; // Generator point G
+        const hsBigInt = BigInt(sharedSecret); // hs should already be in hex or BigInt format
+        const hsPoint = G.multiply(hsBigInt); // hs * G
+        hsp = hsPoint;
+        // B.Adition it to Bob’s public key:
+        const point = secp.ProjectivePoint.fromHex(alicepublicKeyDehex); // Bob's public key point
+        //  const point = secp.ProjectivePoint.fromHex(bobPublicKey);  // Bob's public key point
+        const stealthPubPoint = hsPoint.add(point); // hs * G + B (Bob's public key)
+        spp = stealthPubPoint;
+        // C.Convert the resulting point to an Ethereum address: 
+        const stealthPubKey = stealthPubPoint.toHex(); // Convert to hex
+        const stealthAddress1 = ethers.computeAddress("0x" + stealthPubKey); // Convert to Ethereum address
+        stPk = stealthAddress1;
+        console.log("\uD83D\uDC7BStealth Address:", stealthAddress1);
+        signatureSpan.innerHTML += `<br><br>Stealth PROXY address: ${stealthAddress1}`;
+        return {
+            stealthAddress: stealthAddress1,
+            sharedSecret
+        };
+    } catch (error) {
+        console.error(error);
+        status.textContent = `Error: ${error.message}`;
+    }
+}
+async function metamaskGenStAddr(bobPublicKey) {
+    console.log("metamaskStAddrGen()");
+    try {
+        if (!currentAccount) {
+            status.textContent = "Error: Please connect your wallet first.";
+            return;
+        }
+        // GENERATE PUBLIC KEY (completar)
+        if (!/^[0-9a-fA-F]+$/.test(bobPublicKey)) bobPublicKey = "03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c";
+        // ------
+        const bobPublicKeyHexed = `0x${bobPublicKey}`;
+        console.log("bobPublicKeyHexed: ", bobPublicKeyHexed, bobPublicKey);
+        // 1. Alice uses MetaMask to sign a message containing Bob's public key (B):
+        const message = ethers.solidityPacked([
+            "bytes"
+        ], [
+            bobPublicKeyHexed
+        ]);
+        mmsg = message;
+        console.log("message:", message);
+        let hexedMessage = hexer(message);
+        hmmsg = hexedMessage;
+        // 2. Derive the Shared Secret: Alice hashes the signature to derive hs:
+        let params = [
+            hexedMessage,
+            currentAccount
+        ];
+        pp = params;
+        // const values = [bobPublicKey, "SharedSecretMessage"];
+        // Request the user to sign the message
+        const ethereummmsdk = mmsdk.getProvider();
+        const signature = await ethereummmsdk.request({
+            method: "personal_sign",
+            params: [
+                hexedMessage,
+                currentAccount
+            ],
+            params: params
+        });
+        ssig = signature;
+        console.log("Signature:", signature);
+        // ...............
+        // GET USER(ALICE) PUBKEY
+        const publicKey = await derivePubkey(hexedMessage, signature);
+        console.log("publicKey():", publicKey);
+        // ...............
+        // Display the signature
+        signatureSpan.textContent = signature;
+        signatureDisplay.style.display = "block";
+        status.textContent = "Message signed successfully!";
+        // Step: recover the address from the signed message
+        const recoveredAddress = ethers.verifyMessage(message, signature); //ok!!!.recupera bie la address
+        console.warn("\u2705  \u26D3\uFE0F\u200D\uD83D\uDCA5 Recovered Address:", recoveredAddress);
+        // 2 .Alice hashes the signature to derive hs:
+        const sharedSecret = ethers.keccak256(signature);
+        console.log("Shared Secret:", sharedSecret);
+        signatureSpan.innerHTML += `<br><br>Shared secret: ${sharedSecret}`;
+        //////////////////////////
+        // 3. Alice computes the stealth public key (stPk) using hs and Bob's public key (B):
+        // const stPk = hs * G + B; // Elliptic curve math
+        //////////////////////////
+        // A.Multiply hs by the curve generator point (G): 
+        const G = secp.ProjectivePoint.BASE; // Generator point G
+        const hsBigInt = BigInt(sharedSecret); // hs should already be in hex or BigInt format
+        const hsPoint = G.multiply(hsBigInt); // hs * G
+        hsp = hsPoint;
+        // B.Adition it to Bob’s public key:
+        const point = secp.ProjectivePoint.fromHex(bobPublicKey); // Bob's public key point
+        const stealthPubPoint = hsPoint.add(point); // hs * G + B (Bob's public key)
+        spp = stealthPubPoint;
+        // C.Convert the resulting point to an Ethereum address: 
+        const stealthPubKey = stealthPubPoint.toHex(); // Convert to hex
+        const stealthAddress1 = ethers.computeAddress("0x" + stealthPubKey); // Convert to Ethereum address
+        stPk = stealthAddress1;
+        console.log("\uD83D\uDC7BStealth Address:", stealthAddress1);
+        signatureSpan.innerHTML += `<br><br>Stealth address: ${stealthAddress1}`;
+        return {
+            stealthAddress: stealthAddress1,
+            sharedSecret
+        };
+    } catch (error) {
+        console.error(error);
+        status.textContent = `Error: ${error.message}`;
+    }
+}
+// -----------------------------------------
+// NEW STEALTH ADDRESS FUNCTIONS
+// -----------------------------------------
+async function generateSharedSecret(signer, recipientPublicKey) {
+    // Convert recipient's public key to a message format
+    const message = ethers.keccak256(recipientPublicKey); // Hash the public key
+    // Sign the message using MetaMask
+    const signature = await signer.signMessage(ethers.getBytes(message));
+    console.log("Signature:", signature);
+    // Extract the shared secret from the signature
+    const sharedSecret = ethers.keccak256(signature);
+    console.log("Shared Secret:", sharedSecret);
+    return sharedSecret;
+}
+async function computeStealthAddress(sharedSecret, recipientPublicKey) {
+    // Hash the shared secret
+    const hashedSecret = ethers.keccak256(sharedSecret).slice(0, 42);
+    // Multiply the hash by the generator point (G)
+    const G = secp.ProjectivePoint.BASE; // Generator point G
+    const hsBigInt = BigInt(hashedSecret); // Convert to BigInt
+    const hsPoint = G.multiply(hsBigInt); // hs * G
+    // Add the recipient's public key
+    const recipientPoint = secp.ProjectivePoint.fromHex(recipientPublicKey);
+    const stealthPubPoint = hsPoint.add(recipientPoint); // hs * G + recipient's public key
+    // Convert the resulting point to an Ethereum address
+    const stealthPubKey = stealthPubPoint.toHex(); // Convert to hex
+    const stealthAddress1 = ethers.computeAddress("0x" + stealthPubKey); // Convert to Ethereum address
+    console.log("Stealth Address:", stealthAddress1);
+    return stealthAddress1;
+}
+async function createStealthAddressWithMetamask() {
+    console.log("\uD83E\uDD8A\uD83E\uDD8A\uD83E\uDD8A createStealthAddressWithMetamask()");
+    try {
+        // Step 1: Get the user's public key
+        const recipientPublicKey = await getPublicKeyFromMetaMask();
+        // alert(recipientPublicKey)
+        // Step 2: Generate the stealth address
+        // const stealthAddress = await generateStealthAddressWithMetaMask('03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c');
+        console.log("Stealth Address for Donations:", stealthAddress);
+        return stealthAddress;
+    } catch (error) {
+        console.error("Error setting up stealth donations:", error);
+    }
+}
+async function getPublicKeyFromMetaMask(bobPublicKey) {
+    console.log("getPublicKeyFromMetaMask()");
+    if (!window.ethereum) throw new Error("MetaMask is not installed!");
+    // Step 1: Connect to MetaMask
+    const provider = new ethers.BrowserProvider(window.ethereum); /// OLD METHOD
+    const signer = await provider.getSigner();
+    const address = await signer.getAddress();
+    console.log("Connected to MetaMask account (OLD METHOD \uD83E\uDD96 \uD83E\uDD96):", address);
+    // ---
+    // Step 2: Define a message to sign
+    // const message = 'Sign this message to generate your public key for stealth donations.';
+    // msga = message;
+    // const messageBytes = ethers.getBytes(ethers.id(message)); // Hash the message
+    // msgb = messageBytes
+    // ---
+    // VARIATION
+    if (!/^[0-9a-fA-F]+$/.test(bobPublicKey)) bobPublicKey = "03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c";
+    // ------
+    const bobPublicKeyHexed = `0x${bobPublicKey}`;
+    console.log("bobPublicKeyHexed: ", bobPublicKeyHexed, bobPublicKey);
+    // 1. Alice uses MetaMask to sign a message containing Bob's public key (B):
+    const message = ethers.solidityPacked([
+        "bytes"
+    ], [
+        bobPublicKeyHexed
+    ]);
+    console.log("message:", message);
+    let hexedMessage = hexer(message);
+    hmmsg = hexedMessage;
+    let params = [
+        hexedMessage,
+        currentAccount
+    ];
+    // // Request the user to sign the message
+    // const ethereummmsdk = mmsdk.getProvider()
+    // const signature = await ethereummmsdk.request({
+    //     method: 'personal_sign',//Prepends a safe prefix
+    //     params: [hexedMessage, currentAccount],//v1 messageHex. recupera bien la address
+    //     params: params,//v1 messageHex. recupera bien la address
+    //     // params: [message, currentAccount],//v1 messageHex. recupera bien la address
+    // });
+    // ssig=signature
+    // console.log('Signature:', signature);
+    // [[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]
+    // Step 3: Request the user to sign the message
+    const signature = await signer.signMessage(hexedMessage);
+    console.log("Signature:", signature);
+    sig2 = signature;
+    // ---
+    // Step 4: Recover the public key from the signature
+    const recoveredAddress = ethers.verifyMessage(hexedMessage, signature); //ok!!!
+    console.log(" Recovered Address:", recoveredAddress);
+    // Optional: Verify the recovered address matches the signer's address
+    if (recoveredAddress !== address) throw new Error("Recovered address does not match signer address!");
+    // ---
+    // Step 5: Derive the public key 
+    const publicKey = await derivePublicKeyFromSignature(signature, hexedMessage);
+    console.log("Recovered Public Key:", publicKey);
+    // let verifyAddr2 =  await deriveAddressFromPublicKey(publicKey);
+    //     console.warn('Verified address v2 from Public Key:', verifyAddr2);
+    return publicKey;
+}
+async function derivePubkey(message, signature) {
+    // ATENCIO: Ethereum signatures use a specific hashing process for messages. When signing with personal_sign, the message is 
+    // prefixed with \x19Ethereum Signed Message:\n<length> before hashing.
+    // Hash the message (keccak256 hash of the message)
+    const messageHash = ethers.keccak256(ethers.toUtf8Bytes(message));
+    // Convert the signature to bytes format
+    const sigBytes = ethers.getBytes(signature);
+    // Split the signature into `r`, `s`, and `v` components
+    const r = sigBytes.slice(0, 32);
+    const s = sigBytes.slice(32, 64);
+    const v = sigBytes[64];
+    // ---
+    // Convert the message hash to Uint8Array (remove '0x' prefix)
+    const messageHashBytes = ethers.getBytes(messageHash);
+    // Adjust `v` to match secp256k1's expected range (0 or 1)
+    const recoveryBit = v - 27;
+    // Recover the public key
+    const publicKey = secp.Signature.fromCompact(sigBytes.slice(0, 64)).addRecoveryBit(recoveryBit).recoverPublicKey(messageHashBytes);
+    // ---
+    puk = publicKey;
+    const publicKeyHex = publicKey.toHex(); // Convert to hex
+    const originalAddress = ethers.computeAddress("0x" + publicKeyHex); // Convert to Ethereum address
+    console.warn("\uD83D\uDC69\u200D\uD83C\uDFA4 ALICE Address (from pubKey):", originalAddress);
+    // Convert the public key to a compressed format (optional)
+    const compressedPublicKey = `0x${publicKeyHex}`;
+    cpuk = compressedPublicKey;
+    console.warn("Public Key (Compressed):", compressedPublicKey);
+    return compressedPublicKey;
+}
+async function derivePublicKeyFromSignature(message, signature) {
+    try {
+        // Step 1: Hash the message using Keccak-256
+        const messageHash = ethers.id(message); // Hash the message
+        // Step 2: Parse the signature into its components (r, s, v)
+        const sig = ethers.Signature.from(signature); // Parse the signature
+        const r = sig.r;
+        const s = sig.s;
+        const recoveryId = sig.v - 27; // Convert v (27/28) to recovery ID (0/1)
+        // Step 3: Recover the public key
+        const publicKey = ethers.SigningKey.recoverPublicKey(messageHash, {
+            r,
+            s,
+            v: recoveryId + 27
+        });
+        console.log("Recovered Public Key:", publicKey);
+        return publicKey;
+    // Step 4: Derive the Ethereum address from the public key
+    // const address = getAddressFromPublicKey(publicKey);
+    // console.log('Derived Ethereum Address:', address);
+    // return address;
+    } catch (error) {
+        console.error("Error recovering address from signature:", error);
+        throw error;
+    }
+}
+// Helper function to derive an Ethereum address from a public key
+function getAddressFromPublicKey(publicKey) {
+    // Ensure the public key is valid
+    if (!publicKey.startsWith("0x")) publicKey = "0x" + publicKey; // Add '0x' prefix if missing
+    if (publicKey.length !== 132) throw new Error("Invalid public key length. Expected 64 bytes (uncompressed public key).");
+    // Remove the '0x' prefix and the first byte (0x04 for uncompressed keys)
+    const keyBytes = publicKey.slice(4); // Remove '0x04'
+    // Hash the public key using Keccak-256
+    const hashedKey = ethers.keccak256("0x" + keyBytes);
+    // Extract the last 20 bytes (40 hex characters)
+    const address = "0x" + hashedKey.slice(-40);
+    // Convert to a checksummed address
+    return ethers.getAddress(address);
+}
+// Function to derive an Ethereum address from a public key
+// import { ethers } from 'ethers';
+function deriveAddressFromPublicKey(publicKey) {
+    // Step 1: Ensure the public key is valid
+    if (!publicKey.startsWith("0x")) publicKey = "0x" + publicKey; // Add '0x' prefix if missing
+    // Step 2: Validate the public key length
+    if (publicKey.length !== 132) throw new Error("Invalid public key length. Expected 64 bytes (uncompressed public key).");
+    // Step 3: Remove the '0x' prefix and the first byte (0x04 for uncompressed keys)
+    const keyBytes = publicKey.slice(4); // Remove '0x04'
+    // Step 4: Hash the public key using Keccak-256
+    const hashedKey = ethers.keccak256("0x" + keyBytes);
+    // Step 5: Take the last 20 bytes (40 characters in hex)
+    const address = "0x" + hashedKey.slice(-40);
+    // Step 6: Convert to a checksummed address
+    return ethers.getAddress(address);
+}
+function getLast20Bytes(hexString) {
+    // Ensure the input is a valid hex string with '0x' prefix
+    if (!hexString.startsWith("0x")) throw new Error("Invalid hex string: must start with '0x'");
+    // Ensure the hex string is long enough to extract 20 bytes
+    if (hexString.length < 42) throw new Error("Hex string is too short to extract 20 bytes");
+    // Extract the last 40 characters (20 bytes)
+    const last20Bytes = "0x" + hexString.slice(-40); // Take the last 40 characters
+    return last20Bytes;
+}
+// Add event listener to the button
+connectButton.addEventListener("click", handleConnectAndSign);
+signButton.addEventListener("click", createProxyAddress);
+createOwnStealthAddressButton.addEventListener("click", createStealthAddressWithMetamask);
+// ----------------------------
+// EXTRA UTILS (TEST)
+// ----------------------------
+// Helper function to convert a hex string to a Uint8Array
+function hexToBytes(hex) {
+    const bytes = new Uint8Array(hex.length / 2);
+    for(let i = 0; i < hex.length; i += 2)bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+    return bytes;
+}
+// Helper function to convert a Uint8Array to a hex string
+function bytesToHex(bytes) {
+    return Array.from(bytes, (byte)=>byte.toString(16).padStart(2, "0")).join("");
+}
+function uncompressPubKey(comppressedPubkey) {
+    // Compressed public key (hex string)
+    const compressedPublicKeyHex = "03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c";
+    // Step 1: Convert the compressed public key hex string into a Uint8Array
+    const compressedPublicKeyBytes = hexToBytes(compressedPublicKeyHex);
+    // Step 2: Decompress the public key using @noble/secp256k1
+    // const point = Point.fromHex(compressedPublicKeyBytes); // This creates a Point object from the compressed key
+    const point = secp.ProjectivePoint.fromHex(compressedPublicKeyBytes); // Bob's public key point
+    // Step 3: Get the uncompressed public key as a Uint8Array
+    const uncompressedPublicKeyBytes = point.toRawBytes(false); // false means uncompressed format
+    // Step 4: Convert the uncompressed public key back to a hex string
+    const uncompressedPublicKeyHex = bytesToHex(uncompressedPublicKeyBytes);
+    console.log("Uncompressed Public Key:", uncompressedPublicKeyHex);
+}
+function compressPubKey(publicKey) {
+    if (!(publicKey instanceof Uint8Array)) throw new Error("Public key must be a Uint8Array");
+    // Validate length for uncompressed (65 bytes) or compressed (33 bytes)
+    if (![
+        65,
+        33
+    ].includes(publicKey.length)) throw new Error("Invalid public key length");
+    // Compress the public key
+    const compressed = secp.ProjectivePoint.fromHex(publicKey).toHex();
+    validateCompressedPublicKey(compressed);
+    // ensureHexPrefix(compressed,66)
+    return compressed;
+}
+function validateCompressedPublicKey(publicKeyHex) {
+    if (publicKeyHex.startsWith("0x")) // Remove the '0x' prefix for validation
+    publicKeyHex = publicKeyHex.slice(2);
+    // Validate the data length (66 characters for a compressed public key)
+    if (publicKeyHex.length !== 66) throw new Error("Invalid compressed public key length. Expected 66 characters.");
+    // Validate the prefix byte
+    const prefix = publicKeyHex.slice(0, 2);
+    if (prefix !== "02" && prefix !== "03") throw new Error("Invalid compressed public key: Prefix must be 0x02 or 0x03");
+    console.log("The public key is valid and compressed.");
+}
+// Function to derive an address on demand
+async function deriveAddressWallet(mnemonic, index) {
+    const basePath = "m/44'/60'/0'/0/";
+    const path = `${basePath}${index}`;
+    const derivedNode = ethers.HDNodeWallet.fromPhrase(mnemonic, path);
+    return derivedNode;
+}
+async function aliceWallet() {
+    let aliceMnemonic = localStorage.getItem("aliceMnemonic");
+    if (!aliceMnemonic) {
+        console.error("NO aliceMnemonic  in localStorage!");
+        const randmnemonic = await ethers.HDNodeWallet.createRandom();
+        aliceMnemonic = randmnemonic.mnemonic.phrase;
+        localStorage.setItem("aliceMnemonic", aliceMnemonic);
+    } else console.log("aliceMnemonic is in localStorage!");
+    let aliceWall = deriveAddressWallet(aliceMnemonic, 0);
+    return aliceWall;
+}
+
+</script>
+</body>
+
+</html>

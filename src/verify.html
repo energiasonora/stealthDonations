@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VERIFY SIG</title>
+    <style>
+        body {
+            background-color: black;
+            color: green;
+        }
+        </style>
+
+</head>
+
+<body>
+    <h1>VERIFY SIG</h1>
+    <div>
+        <p>Example with PK for address 0xEce6CDC307a55B2c4fE5745208Cea58AB1ec1111</p>
+      
+        <label for="signature">paste your HASH here:</label>
+        <textarea type="text" id="hash"></textarea>
+        <br>
+      
+        <label for="signature">paste your SIGNATURE here:</label>
+        <textarea type="text" id="signature"></textarea>
+    </div>
+<button id="verify">VERIFY</button>
+    <div id="result"></div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.12.0/ethers.umd.min.js" type="application/javascript"></script>
+<script>
+
+
+verify.onclick = function (e) {
+    console.log('VERIFY CLICKED!')
+    let hash = document.getElementById('hash').value;
+    let signature = document.getElementById('signature').value;
+      verifySig(hash, signature) 
+
+}
+async function verifySig(hash, signature) {
+console.log('verifySig()')
+          let n = ethers.getBytes(hash);
+          console.log('getBytes:', n)
+          try {
+            i = await ethers.verifyMessage(hash, signature);
+            // Return the address of the private key that produced the signature sig during signing for message.
+
+
+          } catch (error) {
+            console.error("An error occurred:", error);
+            (o.style.display = "inline"), (s.style.display = "none"), console.log("ERROR: Address NOT VERIFIED", error.reason);
+          }
+        } 
+</script>
+</body>
+
+</html>
