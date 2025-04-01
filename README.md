@@ -11,12 +11,11 @@ https://www.hackquest.io/es/projects/stealthDonations
 
 
 # DEMO LINKS
-https://stealthdonations.web.app/?tokenId=1
-https://stealthdonations.web.app/metamask.html
-Watch the presentation video: [Presentation Video](https://www.youtube.com/watch?v=l6I0RvU-Is4)
-Watch the demo video: [Demonstration Video](https://youtu.be/xM-VxRU9VZY)
+Donation page: https://stealthdonations.web.app/?tokenId=1
 
+Metamask stealth address creation: https://stealthdonations.web.app/metamask.html
 
+stealth address test with Alice and Bob example: https://stealthdonations.web.app/stealth.html
  
 ## Why Stealth Donations?
 
@@ -39,7 +38,7 @@ Create a Campaign : Specify an Ethereum address (individual, group, or multisig)
 
 Donate Anonymously : Donors contribute via stealth addresses, ensuring their identity and transaction details remain private.
 
-Receive Funds Directly : Funds are sent directly to the recipient's wallet, bypassing intermediaries and preserving trust.
+Receive Funds Directly : Funds are sent directly to the recipient's (stealth/proxy) wallet, bypassing intermediaries and preserving trust.
 
 ## Who Is It For?
 
@@ -92,54 +91,6 @@ To create stealth addresses between Alice and Bob, we need both private and publ
 - `stPk`: Stealth public key  
 - `stAddr`: Stealth address  
 
-
-<!-- ### Procedure for Creating Stealth Addresses Between Alice and Bob
-
-To create stealth addresses between Alice and Bob, we require both private and public keys. Below is the step-by-step procedure:
-
-#### Definitions:
-- **s**: Shared secret  
-- **hs**: Hashed shared secret  
-- **G**: Generator point of the elliptic curve  
-- Lowercase letters (e.g., `a`): Private keys  
-- Uppercase letters (e.g., `B`): Public keys  
-- **stPk**: Stealth public key  
-- **stAddr**: Stealth address  
-
-#### Step 1: Generate the Shared Secret
-The shared secret (`s`) is computed as follows:
-$$ s = a \cdot B $$
-Where:
-- `a` is Alice's private key.
-- `B` is Bob's public key.
-
-Alice computes the shared secret by multiplying her private key (`a`) with Bob's public key (`B`). The result is the same shared secret that Bob would compute if he multiplied his private key (`b`) with Alice's public key (`A`):
-$$ s = b \cdot A $$
-
-This symmetry arises from the properties of elliptic curve cryptography.
-
-#### Step 2: Hash the Shared Secret
-Next, the shared secret (`s`) is hashed to produce the **hashed shared secret** (`hs`):
-$$ hs = \text{hash}(s) $$
-
-Hashing ensures that the shared secret is transformed into a fixed-length value, which enhances security and makes it suitable for further cryptographic operations.
-
-#### Step 3: Compute the Stealth Public Key
-The **stealth public key** (`stPk`) is derived by combining the hashed shared secret (`hs`) with the generator point (`G`) of the elliptic curve and Bob's public key (`B`):
-$$ \text{stPk} = hs \cdot G + B $$
-
-Here’s what happens in this step:
-1. Multiply the hashed shared secret (`hs`) by the generator point (`G`) of the elliptic curve.
-2. Add Bob's public key (`B`) to the result.
-
-This computation ensures that the stealth public key is unique to the interaction between Alice and Bob.
-
-#### Step 4: Generate the Stealth Address
-Finally, the **stealth address** (`stAddr`) is obtained by encoding the stealth public key (`stPk`) into a usable format:
-$$ \text{stAddr} = \text{Addr}(\text{stPk}) $$
-
-The stealth address is the final output that can be used for transactions. It allows Alice to send funds to Bob in a way that maintains privacy, as the address is derived uniquely for this specific interaction.
-  -->
 
 
 # metamask and stealth addresses
