@@ -2,15 +2,21 @@
 built in hackquest 
 https://www.hackquest.io/es/projects/stealthDonations
 
+# Presentation
+[![Watch the presentation video](https://img.youtube.com/vi/l6I0RvU-Is4/0.jpg)](https://www.youtube.com/watch?v=l6I0RvU-Is4)
+
+# Demo
+[![Watch the demo](https://img.youtube.com/vi/xM-VxRU9VZY/0.jpg)](https://www.youtube.com/watch?v=xM-VxRU9VZY)
+<!-- [![Video Title](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=l6I0RvU-Is4) -->
+
+
 # DEMO LINKS
 https://stealthdonations.web.app/?tokenId=1
 https://stealthdonations.web.app/metamask.html
-
-Watch the demo video: [Presentation Video](https://www.youtube.com/watch?v=l6I0RvU-Is4)
+Watch the presentation video: [Presentation Video](https://www.youtube.com/watch?v=l6I0RvU-Is4)
 Watch the demo video: [Demonstration Video](https://youtu.be/xM-VxRU9VZY)
 
 
-## Description
  
 ## Why Stealth Donations?
 
@@ -205,8 +211,7 @@ rm -rf .parcel-cache
 yarn parcel src/index.html src/metamask.html src/stealth.html --dist-dir public  --public-url ./
 firebase deploy --only hosting:stealthdonations
 
-# debug helpers
-yarn list --pattern parcel
+
 
 # git 
 https://github.com/energiasonora/stealthDonations
@@ -223,11 +228,11 @@ https://github.com/energiasonora/stealthDonations
     - Store the recipient’s public key in the NFT metadata for donors to use.
 5. Donors Derive Unique Stealth Addresses :
     - Donors use the recipient’s public key to derive unique stealth addresses for sending donations.
-
+<!-- 
 # Key Takeaways
 - The recipient generates their own key pair and uses it to create the stealth address.
 - Meta-transactions allow the stealth address to mint the NFT without exposing the recipient’s primary wallet or funding source.
-- The recipient’s public key is shared securely (via NFT metadata ) for donors to derive unique stealth addresses.
+- The recipient’s public key is shared securely (via NFT metadata ) for donors to derive unique stealth addresses. -->
 
 <!-- # how Alice generates her own stealth (proxy) address?
 let alicewallet = await aliceWallet()
