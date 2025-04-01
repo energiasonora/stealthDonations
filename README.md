@@ -2,15 +2,16 @@
 built in hackquest 
 https://www.hackquest.io/es/projects/stealthDonations
 
-# DEMO
+# DEMO LINKS
 https://stealthdonations.web.app/?tokenId=1
 https://stealthdonations.web.app/metamask.html
 
+Watch the demo video: [Presentation Video](https://www.youtube.com/watch?v=l6I0RvU-Is4)
+Watch the demo video: [Demonstration Video](https://youtu.be/xM-VxRU9VZY)
+
+
 ## Description
-### Empowering Privacy and Freedom in Crowdfunding
-
-In a world where financial freedom and privacy are increasingly under threat, Stealth Donations offers a revolutionary solution for anonymous, censorship-resistant crowdfunding. Built on the Ethereum blockchain, this decentralized application (dApp) enables individuals and groups to create fundraising campaigns while preserving the anonymity of both donors and recipients.
-
+ 
 ## Why Stealth Donations?
 
 Traditional crowdfunding platforms often compromise user privacy, expose sensitive information, and are vulnerable to censorship or shutdowns. With Stealth Donations , we eliminate these risks by leveraging stealth addresses —a cutting-edge cryptographic mechanism that ensures donations are sent and received privately, without revealing identities or transaction details.
@@ -228,10 +229,10 @@ https://github.com/energiasonora/stealthDonations
 - Meta-transactions allow the stealth address to mint the NFT without exposing the recipient’s primary wallet or funding source.
 - The recipient’s public key is shared securely (via NFT metadata ) for donors to derive unique stealth addresses.
 
-# how Alice generates her own stealth (proxy) address?
+<!-- # how Alice generates her own stealth (proxy) address?
 let alicewallet = await aliceWallet()
 const alicePrivateKeyA = alicewallet.privateKey;
 let alicePrivateKey = ethers.getBytes(alicePrivateKeyA);
 let alicePublicKey = getPublicKey(alicePrivateKey);
 let stealthAddress = await generateStealthAddress(alicePrivateKey, alicePublicKey)
-console.log('stealthAddress: ', stealthAddress.stealthAddress)
+console.log('stealthAddress: ', stealthAddress.stealthAddress) -->
