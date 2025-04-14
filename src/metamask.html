@@ -41,8 +41,7 @@
         
 
     <div class=" col">
-        <span>--------------------------</span>
-        <h3>ALICE</h3>
+        <h3>ALICE (METAMASK)</h3>
 
         <!-- <h1>MetaMask Stealth Donations </h1>
         <p>Given Bob's public key: 03c2ceb90237c4eca2a8ce51c1f2d217f860dcb8909cdc9e2c9b5a038e70f6eb9c</p> -->
@@ -53,17 +52,29 @@
 
         <!-- <main class="container"> -->
         <h1>Sign to create your Stealth Address (proxy address)</h1>
-        <!-- <p id="status">Status: Not Connected</p> -->
-        <!-- <button id="connectButton" class="contrast">Connect to MetaMask</button> -->
-        <!-- <p id="accountDisplay" style="display: none;">Connected Account: <span id="account"></span></p> -->
-        <button id="signButton" class="secondary" style="display: none;">Create proxy address (personal_sign)</button>
+         <button id="signButton" class="secondary" style="display: none;">Create proxy address (personal_sign)</button>
         <p id="signatureDisplay" style="display: none;">Signature: <span id="signature"></span></p>
 
 
         <button id="signButtonMS" class="secondary" style="display: none;">Create proxy address (eth_signTypedData_v4)</button>
         <p id="stealthAddressDisplay" style="display: none;">Stealth Address: <span id="stealthAddress"></span></p>
 
-    </main>
+    <!-- </main> -->
+    Address: <span id="aliceAddress" class="addr"></span><br>
+    Public Key: <span id="alicePubkey" class="addr"></span><br>
+    
+    <span id="aliceSharedSecret" class="addr"></span>
+    <span id="aliceBalance" class="balance"></span>
+    <span id="aliceGas" class="balance"></span>
+
+    <fieldset role="group">
+        <input type="number" id="aliceAmount" placeholder="Amount to send" step="0.01" min="0" required>
+        <input type="button" id="aliceSendButton" value="Send to bob StAddr" />
+    </fieldset>
+
+    <span id="aliceTx" class="balance"></span>
+
+    <div id="aliceNotifications"></div>
 
     </div> 
 
@@ -79,7 +90,7 @@
 
         <fieldset role="group">
             <input type="number" id="bobAmount" placeholder="Amount to send" step="0.01" min="0" required>
-            <input type="button" id="senBobButton" value="Send to alice StAddr" />
+            <input type="button" id="bobSendButton" value="Send to alice StAddr" />
         </fieldset>
 
         <span id="bobTx" class="balance"></span>
@@ -158,8 +169,8 @@
 
 
 
-        async function handleConnectAndSign() {
-            console.log('handleConnectAndSign')
+        async function connectWithMetamask() {
+            console.log('connectWithMetamask')
 
             const MMSDK = new MetaMaskSDK({
                 dappMetadata: {
@@ -179,6 +190,10 @@
             // Update UI with connected account
             if (accounts.length > 0) {
                 status.textContent = 'Status: Connected';
+
+                let aliceAddresslink = ` <a href="${optionsList[0].EXPLORER}/address/${accounts[0]}" target="_blank">${accounts[0]}</a>`
+                document.getElementById('aliceAddress').innerHTML = aliceAddresslink;
+                // aliceAddress.innerHTML=accounts[0];
                 currentAccount = accounts[0];
                 connectButton.style.display = 'none';
                 accountSpan.textContent = accounts[0];
@@ -269,78 +284,65 @@ function generateDeterministicNonce(aliceAddress, bobPublicKey, protocolId) {
                 }
 
 
+                //////////////////////////
+                // CREATE DETERMINISTIC EPHIMERALL KEYPAIR (for alice)
+                // alice signs BOB PUBKEY (smart contract pubkey) 
+                // to deterministically create a private key for the new keypair
+                //////////////////////////
+
                 // GET BOB PUBLIC KEY
-                let bobPK= document.getElementById('bobPubkey').innerHTML
+                  bobPK= document.getElementById('bobPubkey').innerHTML
 
                  // ...............
                 // NONCE?
                 let aliceAddress = currentAccount
-             bobViewingPublicKey = bobPK;// spending and viewing are the same for now
-             bobSpendingPublicKey = bobPK;// spending and viewing are the same for now
-            const protocolId = "stealthDonations-v1"; //  protocol identifier
+                const protocolId = "stealthDonations-v1"; //  protocol identifier
 
-            console.log('joinedDATA: ',aliceAddress, bobViewingPublicKey, protocolId);
-            const nonce = generateDeterministicNonce(aliceAddress, bobViewingPublicKey, protocolId);
-            console.log("Deterministic Nonce:", nonce);
-            // return 
-            
-            // Concatenate Bob's public key and the nonce
-            const messageData = new Uint8Array([
-              ...hexToBytes(bobPublicKey.slice(2)), // Remove '0x' prefix
-              ...new Uint8Array(new BigUint64Array([BigInt(nonce)]).buffer), // Convert nonce to bytes
-            ]);
-            console.log('messageData:', messageData)
-            
+                console.log('joinedDATA: ',aliceAddress, bobPK, protocolId);
+                const nonce = generateDeterministicNonce(aliceAddress, bobPK, protocolId);
+                console.log("Deterministic Nonce:", nonce);
+                
+                // Concatenate Bob's public key and the nonce
+                const messageData = new Uint8Array([
+                ...hexToBytes(bobPublicKey.slice(2)), // Remove '0x' prefix
+                ...new Uint8Array(new BigUint64Array([BigInt(nonce)]).buffer), // Convert nonce to bytes
+                ]);
+                console.log('messageData:', messageData)
+                
               // Hash the concatenated data
                 let hashedData = bytesToHex(ethers.keccak256(messageData));
                 console.log('hashedData:', hashedData)
 
-
-            //     let hexedData = hexer(hashedData);
-            //     console.log('hexedData:', hexedData)
-            // return 
-
-
-                // Step: The message to sign
-                // const message = 'create stealth address';
-                // console.log('message:', message)
-
-                // let hexedMessage = hexer(bobPK);
-                // // let hexedMessage = hexer(message);
-                // console.log('mhex:', hexedMessage)
-
-
                 // ALICE SIGNS BOB PUBKEY
-                // OLD 2. Derive the Shared Secret: Alice hashes the signature to derive hs:
-                // let params = [hexedMessage, currentAccount];
-                let params = [hashedData, currentAccount];
+                 let params = [hashedData, currentAccount];
 
-                // Request the user to sign the message
+                // Request to sign the message
                 const ethereummmsdk = mmsdk.getProvider()
                  signature = await ethereummmsdk.request({
-                    // method: 'messageSing',//Prepends a safe prefix
                     method: 'personal_sign',//Prepends a safe prefix
                     params: params,//v1 messageHex. recupera bien la address
                 });
                 console.log('Signature:', signature);
-// return
+
                 // ...............
                 // Step: recover the address from the signed message
                 const recoveredAddress = ethers.verifyMessage(hashedData, signature);//ok!!!.recupera bie la address
-                // const recoveredAddress = ethers.verifyMessage(message, signature);//ok!!!.recupera bie la address
                 console.warn('✅  ⛓️‍💥 Recovered Address from signature:', recoveredAddress);
                 
-                // return
         
                 // ...............
                 // WRITE TO LOCALSTORAGE?
 
-               
+
                 
                 // ...............
-                // GET USER(ALICE) PUBKEY
+                //  ▗▄▖ ▗▖   ▗▄▄▄▖ ▗▄▄▖▗▄▄▄▖
+                // ▐▌ ▐▌▐▌     █  ▐▌   ▐▌   
+                // ▐▛▀▜▌▐▌     █  ▐▌   ▐▛▀▀▘
+                // ▐▌ ▐▌▐▙▄▄▖▗▄█▄▖▝▚▄▄▖▐▙▄▄▖
+
+                // GET USER(ALICE) PUBKEY ???
                 const alicepublicKey = await derivePubkey(hashedData, signature);
-                // const alicepublicKey = await derivePubkey(hexedMessage, signature);
                 alicepubkey = alicepublicKey;
                 console.log('alicepublicKey:', alicepublicKey)
                 // return
@@ -354,67 +356,137 @@ function generateDeterministicNonce(aliceAddress, bobPublicKey, protocolId) {
                 status.textContent = 'Message signed successfully!';
 
 
-            //     // ...............
-            //     // CREATE ALICE STEALTH ADDRESS USING SIGNATURE AS PRIVATE KEY
-            // Derive the ephemeral private key from the signature
-            // const hash = sha256(hexToBytes(signature));
-            const hash = ethers.getBytes(ethers.keccak256(signature)); // Hash Bob's public key
-
-             ephemeralPrivateKey = hash.slice(0, 32); // Use the first 32 bytes as the private key
-             ephemeralPublicKey = secp.getPublicKey(ephemeralPrivateKey, true); // Compressed format
+                // ...............
+                // CREATE ALICE STEALTH ADDRESS USING SIGNATURE AS PRIVATE KEY
+                // ...............
+                // Derive the ephemeral private key from the signature
+                // const hash = sha256(hexToBytes(signature));
+                signedHash = ethers.getBytes(ethers.keccak256(signature)); // Hash Bob's public key
+                ephemeralPrivateKey = signedHash.slice(0, 32); // Use the first 32 bytes as the private key //OK
+                ephPrikeyArray = ethers.hexlify(ephemeralPrivateKey)
+                aliceEphemeralPublicKey = getPublicKey(ephemeralPrivateKey, true); // Compressed format
+    
+                console.log("Ephemeral Private Key (HEXLIFY):", ethers.hexlify(ephemeralPrivateKey));//a
+                console.log("Ephemeral Public Key (HEXLIFY):", ethers.hexlify(aliceEphemeralPublicKey));//A
           
-            // console.log("Ephemeral Private Key:", bytesToHex(ephemeralPrivateKey));
-            console.log("Ephemeral Private Key (HEXLIFY):", ethers.hexlify(ephemeralPrivateKey));
-           
-            // console.log("Ephemeral Public Key:", bytesToHex(ephemeralPublicKey));
-            console.log("Ephemeral Public Key (HEXLIFY):", ethers.hexlify(ephemeralPublicKey));
-          
-            // Compute the shared secret
-            const alicesharedSecret = secp.getSharedSecret(ephemeralPrivateKey, ethers.getBytes(bobViewingPublicKey));
-            console.log("Alice Shared Secret:", ethers.hexlify(alicesharedSecret));
-            // console.log("Alice Shared Secret:", bytesToHex(alicesharedSecret));
-                signatureSpan.innerHTML += `<br><br>Shared secret (Alice side): ${alicesharedSecret}`;
-          
-            // Derive the stealth address
-            const stealthAddress = deriveStealthAddress(alicesharedSecret, bobSpendingPublicKey);
-            console.log("Stealth Address:", stealthAddress);
-
-                   // ...............
-                // NOW CREATE SHARED SECRET FROM BOB SIDE
-                // let alicepublicKeyDehex = removeHexPrefix(ephemeralPublicKey)
-               let bobSharedsecret=  generateBobsharedsecret(alicepublicKeyDehex)
-
-
-               return
 
                 //////////////////////////
-                // 3. Alice computes the stealth public key (stPk) using hs and Bob's public key (B):
-                // const stPk = hs * G + B; // Elliptic curve math
+                // PREPARE THINGS...
                 //////////////////////////
+                // const privateKeyHex = `0x${toHexString(privateKey)}`;
+                 publicKeyHexWithoutPrefix = removeHexPrefix(bobPK);
+                 BPubey = secp.ProjectivePoint.fromHex(publicKeyHexWithoutPrefix);//B
+                 B= BPubey;
+                aPrivkey = BigInt(ethers.hexlify(ephemeralPrivateKey))
+                 a=aPrivkey;
+                 console.log('prepare things:', publicKeyHexWithoutPrefix, BPubey, aPrivkey)
 
-                // A.Multiply hs by the curve generator point (G): 
+                  APubkey = BigInt(ethers.hexlify(aliceEphemeralPublicKey))
 
+                 //////////////////////////
+                 // COMPUTE SHARED SECRET (from alice side)
+                 // s= a *B
+                //  hs= hash(s)
+                 //////////////////////////
+                 // let alternativeAlicePrivateKey = BigInt(ethers.hexlify(ephemeralPrivateKey))
+                 aliceSharedSecret = BPubey.multiply(aPrivkey).toHex();//s=a⋅B
+                console.warn('👫  ALICE sharedSecret  (at generateStealthAddress):', aliceSharedSecret);
+                const hashedSecret = ethers.keccak256('0x' + aliceSharedSecret).slice(0, 42);//hs
+                document.getElementById('aliceSharedSecret').innerHTML += `<br><br>Shared secret (Alice side): ${aliceSharedSecret}`;
+    
+                //////////////////////////
+                // COMPUTE STEALTH PUBKEY (alice to pay bob)
+                // stPk= hs * G +B
+                // hs = hash(a*B) * G +B
+                //////////////////////////
+                
+                // 1.Multiply hs by the curve generator point (G): You can use the secp256k1 
+                // generator point (which is a constant) to compute the point hs * G.
                 const G = secp.ProjectivePoint.BASE;  // Generator point G
-                const hsBigInt = BigInt(sharedSecret);  // hs should already be in hex or BigInt format
-                const hsPoint = G.multiply(hsBigInt);  // hs * G
-                hsp = hsPoint
+                const hs = BigInt(hashedSecret);  // hs should already be in hex or BigInt format
+                const hsPoint = G.multiply(hs);  // hs * G
+                
+                // 2.Adition it to Bob’s public key: (hsPoint +B)
+                 stealthPubPoint = hsPoint.add(BPubey);  // (hs * G) + B (Bob's public key)
+                
+                //////////////////////////
+                // COPMUTE STEALTH ADDRESS (alice) METHOD I: with compute(public key)
+                // stPk= hs * G +B
+                //////////////////////////
+                // 3.Convert the resulting point to an Ethereum address: Finally, you convert the resulting elliptic curve point to an Ethereum address. This is typically done by compressing the point to its x-coordinate, hashing it, and then converting it to an Ethereum address.
+                alicestealthPubKey = stealthPubPoint.toHex();  // Convert to hex
+                document.getElementById('alicePubkey').innerHTML = alicestealthPubKey;// IS THIS ONE OR NOT ???
+                 proxyAddress = ethers.computeAddress('0x' + alicestealthPubKey);  // Convert to Ethereum address
+                console.log('👻proxyAddress Address:', proxyAddress);
+                console.log('👻ALICE sharedSecret:', aliceSharedSecret);
+               document.getElementById('aliceSharedSecret').innerHTML += `<br><br>hased Shared secret (Alice side): ${hashedSecret}`;
 
-                // B.Adition it to Bob’s public key:
-                const point = secp.ProjectivePoint.fromHex(alicepublicKeyDehex);  // Bob's public key point
-                //  const point = secp.ProjectivePoint.fromHex(bobPublicKey);  // Bob's public key point
+               Swal.fire({
+                   title: "Your PROXY address was created!",
+                   text: proxyAddress,
+                   icon: "success"
+                 });
+            
 
-                const stealthPubPoint = hsPoint.add(point);  // hs * G + B (Bob's public key)
-                spp = stealthPubPoint
+                //////////////////////////
+                // COMPUTE STEALTH WALLET (alice) from privkey
+                // a + hs
+                //////////////////////////
+                    // ALICE can comput the private key to the stealth addres
+                const hprivkeyBigInt = BigInt(aPrivkey);  // hs should already be in hex or BigInt format
+    
+                const hsBigInt = BigInt(hashedSecret);  // hs should already be in hex or BigInt format
+                // hs = hsBigInt
+                aliceStealthPrivkeyMethod1 = hprivkeyBigInt + hsBigInt
+                console.warn('🛰️ aliceStealthPrivkeyMethod1: ', aliceStealthPrivkeyMethod1)
 
-                // C.Convert the resulting point to an Ethereum address: 
-                const stealthPubKey = stealthPubPoint.toHex();  // Convert to hex
-                const stealthAddress = ethers.computeAddress('0x' + stealthPubKey);  // Convert to Ethereum address
-                stPk = stealthAddress
-                console.log('👻Stealth Address:', stealthAddress);
-                signatureSpan.innerHTML += `<br><br>Stealth PROXY address:<p><ins>${stealthAddress}</ins></p> `;
+                // aliceStealthPrivkeyMethod2 = hprivkeyBigInt.add(hsBigInt);  // (hs * G) + B (Bob's public key)
+                // console.warn('🛰️ aliceStealthPrivkeyMethod2: ', aliceStealthPrivkeyMethod2)
+    
+                eth2bigint = ethers.toBigInt(aliceStealthPrivkeyMethod1)
+    
+                const stealthPrivateKey = ethers.zeroPadValue(ethers.toBeHex(aliceStealthPrivkeyMethod1), 32);
+                console.warn(' 🚁 ALICE stealthPrivateKey: ', stealthPrivateKey)
+                const stealthwallet = new ethers.Wallet(stealthPrivateKey);
+                const derivedStealthPubKey = stealthwallet.publicKey;
+                console.warn(' 🪂🦹‍♂️ ALICE stealthPrivateKey: ', stealthPrivateKey)
+                console.warn(' 🪂  ALICE STEALTH ADDRESS: ', stealthwallet.address)
+            // ...............
+            
+                    
+            // ▗▄▄▖  ▗▄▖ ▗▄▄▖ 
+            // ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌
+            // ▐▛▀▚▖▐▌ ▐▌▐▛▀▚▖
+            // ▐▙▄▞▘▝▚▄▞▘▐▙▄▞▘
 
+            // ...............
+            //  CALCUlATE SHARED SECRET (FROM BOB SIDE)
+            // s=b.A
+            // let bobSharedsecret=  await generateBobsharedsecret(stealthPubKey)// stealthPubKey= alice pubkey
+            // 1. prepare things
+            // ...............
+            const bobwallet = await bobWallet()
+                 bobPrivKey = bobwallet.privateKey;
+                 bobPrivateKey = ethers.getBytes(bobPrivKey);
+                 bPrivkey = `0x${toHexString(bobPrivateKey)}`;
+                 BPubkey = secp.ProjectivePoint.fromHex(aliceEphemeralPublicKey);
 
-                return { stealthAddress, sharedSecret }
+                //////////////////////////
+                 // COMPUTE SHARED SECRET (from bob side )
+                 // s=b.A
+                 //////////////////////////
+                bobSharedsecret = BPubkey.multiply(BigInt(bPrivkey)).toHex();//s=b⋅A
+                console.log('👫sharedSecret( from bob side):', bobSharedsecret);
+
+                 bobhashedSecret = ethers.keccak256('0x' + bobSharedsecret).slice(0, 42);//hs
+                console.log('hashedSecret( from bob side):', bobhashedSecret);
+            // --------------------------------------
+                console.log('💚🔔 bobSharedsecret (hs):', bobSharedsecret);
+               
+               document.getElementById('bobSharedSecret').innerHTML += `<br><br>Shared secret (Bob side): ${bobhashedSecret}`;
+            //    document.getElementById('bobSharedSecret').innerHTML += `<br><br>Shared secret (Bob side): ${ethers.hexlify(bobSharedsecret)}`;
+               
+            
             } catch (error) {
                 console.error(error);
                 status.textContent = `Error: ${error.message}`;
@@ -436,69 +508,9 @@ function generateDeterministicNonce(aliceAddress, bobPublicKey, protocolId) {
 
                 // GET BOB PUBLIC KEY
                 let bobPK= document.getElementById('bobPubkey').innerHTML
-
-                 // ...............
-                // NONCE?
-            //     let aliceAddress = currentAccount
-            // let bobViewingPublicKey = bobPK;
-            // const protocolId = "stealth-address-v1"; //  protocol identifier
-            // console.log('joinedDATA: ',aliceAddress, bobViewingPublicKey, protocolId);
-            // const nonce = generateDeterministicNonce(aliceAddress, bobViewingPublicKey, protocolId);
-            // console.log("Deterministic Nonce:", nonce);
-            
-            // // Concatenate Bob's public key and the nonce
-            // const messageData = new Uint8Array([
-            //   ...hexToBytes(bobPublicKey.slice(2)), // Remove '0x' prefix
-            //   ...new Uint8Array(new BigUint64Array([BigInt(nonce)]).buffer), // Convert nonce to bytes
-            // ]);
-            // console.log('messageData:', messageData)
-            
-            // //   Hash the concatenated data
-            //     let hashedData = bytesToHex(ethers.keccak256(messageData));
-            //     console.log('hashedData:', hashedData)
-              
-            //     let params = [hashedData, currentAccount];
-// return
-
-                // Define the EIP-712 domain, types, and message content:
-                // const domain = {
-                //     name: "Stealth Address Protocol",
-                //     version: "1",
-                //     chainId: 1, // Replace with your chain ID (e.g., 1 for Ethereum mainnet)
-                //   };
-                  
-                //   const types = {
-                //     StealthAddressData: [
-                //       { name: "recipientPublicKey", type: "bytes" },
-                //       { name: "nonce", type: "uint256" },
-                //     ],
-                //   };
-                  
-                //   const message = {
-                //     recipientPublicKey: bobViewingPublicKey, // Bob's public key
-                //     nonce : generateDeterministicNonce(aliceAddress, bobViewingPublicKey, protocolId), // Deterministic nonce
-                //   };
-
-
-                // //   Step 2: Prepare the Parameters
-                //   const preparams = [
-                //       JSON.stringify({
-                //         domain,
-                //         types,
-                //         primaryType: "StealthAddressData",
-                //         message,
-                //       }),
-                //       currentAccount, // Alice's Ethereum address
-                //     ];
-                //     console.log('preparams: ', preparams)
-
-                // let params = [preparams, currentAccount];
-                // console.log('params: ', preparams)
-
+ 
                 //   ---
                 // ALICE SIGNS BOB PUBKEY
-               
-
                 // ========------------
                 const ethereummmsdk = mmsdk.getProvider()
                 // const provider = MMSDK.getProvider()
@@ -565,70 +577,7 @@ function generateDeterministicNonce(aliceAddress, bobPublicKey, protocolId) {
                 });
                 console.log('Signature:', signature);
                     return
-                // ...............
-                // Step: recover the address from the signed message
-                const recoveredAddress = ethers.verifyMessage(hashedData, signature);//ok!!!.recupera bie la address
-                // const recoveredAddress = ethers.verifyMessage(message, signature);//ok!!!.recupera bie la address
-                console.warn('✅  ⛓️‍💥 Recovered Address from signature:', recoveredAddress);
                 
-                // return
-                // ...............
-                // WRITE TO LOCALSTORAGE?
-
-               
-                
-                // ...............
-                // GET USER(ALICE) PUBKEY
-                const alicepublicKey = await derivePubkey(hashedData, signature);
-                // const alicepublicKey = await derivePubkey(hexedMessage, signature);
-                alicepubkey = alicepublicKey;
-                console.log('alicepublicKey:', alicepublicKey)
-                // return
-
-                let alicepublicKeyDehex = removeHexPrefix(alicepublicKey)
-                // ...............
-
-                // Display the signature
-                signatureSpan.textContent = signature;
-                signatureDisplay.style.display = 'block';
-                status.textContent = 'Message signed successfully!';
-
-
-
-                // 2 .Alice hashes the signature to derive hs:
-                const sharedSecret = ethers.keccak256(signature);
-                console.log('Shared Secret:', sharedSecret);
-                signatureSpan.innerHTML += `<br><br>Shared secret: ${sharedSecret}`;
-
-
-                //////////////////////////
-                // 3. Alice computes the stealth public key (stPk) using hs and Bob's public key (B):
-                // const stPk = hs * G + B; // Elliptic curve math
-                //////////////////////////
-
-                // A.Multiply hs by the curve generator point (G): 
-
-                const G = secp.ProjectivePoint.BASE;  // Generator point G
-                const hsBigInt = BigInt(sharedSecret);  // hs should already be in hex or BigInt format
-                const hsPoint = G.multiply(hsBigInt);  // hs * G
-                hsp = hsPoint
-
-                // B.Adition it to Bob’s public key:
-                const point = secp.ProjectivePoint.fromHex(alicepublicKeyDehex);  // Bob's public key point
-                //  const point = secp.ProjectivePoint.fromHex(bobPublicKey);  // Bob's public key point
-
-                const stealthPubPoint = hsPoint.add(point);  // hs * G + B (Bob's public key)
-                spp = stealthPubPoint
-
-                // C.Convert the resulting point to an Ethereum address: 
-                const stealthPubKey = stealthPubPoint.toHex();  // Convert to hex
-                const stealthAddress = ethers.computeAddress('0x' + stealthPubKey);  // Convert to Ethereum address
-                stPk = stealthAddress
-                console.log('👻Stealth Address:', stealthAddress);
-                signatureSpan.innerHTML += `<br><br>Stealth PROXY address:<p><ins>${stealthAddress}</ins></p> `;
-
-
-                return { stealthAddress, sharedSecret }
             } catch (error) {
                 console.error(error);
                 status.textContent = `Error: ${error.message}`;
@@ -736,29 +685,30 @@ function generateDeterministicNonce(aliceAddress, bobPublicKey, protocolId) {
         // -----------------------------------------
         // NEW STEALTH ADDRESS FUNCTIONS
         // -----------------------------------------
-      
-function deriveStealthAddress(sharedSecret, spendingPublicKey) {
-console.log('deriveStealthAddress', sharedSecret, spendingPublicKey)
-
-  // Hash the shared secret to produce a tweak value
-   tweak = ethers.keccak256(sharedSecret);
-
-  // Convert spending public key to a point on the curve
-   spendingPoint = secp.ProjectivePoint.fromHex(ethers.getBytes(spendingPublicKey));
-//   const spendingPoint = secp.Point.fromHex(ethers.getBytes(spendingPublicKey));
-//   const spendingPoint = secp.Point.fromHex(spendingPublicKey);
-
-// spendingPublicKey should be intarray
-//   const point = secp.ProjectivePoint.fromHex(spendingPublicKey);  // Bob's public key point
-   point = secp.ProjectivePoint.fromHex(ethers.getBytes(bobSpendingPublicKey));  // Bob's public key point
-
-
-  // Add the tweak to the spending public key
-//   stPk= hs * G +B ??
-
-  const stealthPoint = spendingPoint.add(secp.Point.fromPrivateKey(tweak));
-
-  return `0x${stealthPoint.toHex(true)}`; // Compressed format
+        
+        function deriveStealthAddress(sharedSecret, spendingPublicKey) {
+            console.log('deriveStealthAddress', sharedSecret, spendingPublicKey)
+            
+            // Hash the shared secret to produce a tweak value
+            tweak = ethers.keccak256(sharedSecret);
+        
+            // Convert spending public key to a point on the curve
+            spendingPoint = secp.ProjectivePoint.fromHex(ethers.getBytes(spendingPublicKey));
+            //   const spendingPoint = secp.Point.fromHex(ethers.getBytes(spendingPublicKey));
+            //   const spendingPoint = secp.Point.fromHex(spendingPublicKey);
+        
+            // spendingPublicKey should be intarray
+            //   const point = secp.ProjectivePoint.fromHex(spendingPublicKey);  // Bob's public key point
+            point = secp.ProjectivePoint.fromHex(ethers.getBytes(bobSpendingPublicKey));  // Bob's public key point
+        
+        
+            // Add the tweak to the spending public key
+            //   stPk= hs * G +B ??
+        
+            //   const stealthPoint = spendingPoint.add(secp.Point.fromPrivateKey(tweak));
+            const stealthPoint = spendingPoint.add(secp.Point.fromPrivateKey(ethers.getBytes(tweak)));
+        
+          return `0x${stealthPoint.toHex(true)}`; // Compressed format
 }
 
 // const stealthAddress = deriveStealthAddress(sharedSecret, bobSpendingPublicKey);
@@ -1051,7 +1001,7 @@ console.log('deriveStealthAddress', sharedSecret, spendingPublicKey)
 
 
         // Add event listener to the button
-        connectButton.addEventListener('click', handleConnectAndSign);
+        connectButton.addEventListener('click', connectWithMetamask);
         signButton.addEventListener('click', createProxyAddress);
         signButtonMS.addEventListener('click', createProxyAddressAlt);
         // createOwnStealthAddressButton.addEventListener('click', createStealthAddressWithMetamask);
@@ -1187,27 +1137,97 @@ console.log('deriveStealthAddress', sharedSecret, spendingPublicKey)
             }
     
     
- async function generateBobsharedsecret(publicKey) {
+ async function generateBobsharedsecret(alicePublicKey) {
                 // privkey sender, pubkey recipient
-                console.warn('🏰 generateBobsharedsecret()',  publicKey)
+                console.warn('🏰 generateBobsharedsecret()',  alicePublicKey)
                 
-                let bobwallet = await bobWallet()
-                const bobPrivKey = bobwallet.privateKey;
+                 bobwallet = await bobWallet()
+                 bobPrivKey = bobwallet.privateKey;
                 // const alicePrivateKeyA = alicewallet.privateKey;
-                let bobPrivateKey = ethers.getBytes(bobPrivKey);
+                 bobPrivateKey = ethers.getBytes(bobPrivKey);
 
                  privateKeyHex = `0x${toHexString(bobPrivateKey)}`;
                 // a = privateKeyHex
                 // b = publicKey
                 // c = privateKey
-                 pubPoint = secp.ProjectivePoint.fromHex(publicKey);
+                 pubPoint = secp.ProjectivePoint.fromHex(alicePublicKey);
                  sharedSecret = pubPoint.multiply(BigInt(privateKeyHex)).toHex();//s=a⋅B
                 console.log('👫sharedSecret( from bob side):', sharedSecret);
+
                  hashedSecret = ethers.keccak256('0x' + sharedSecret).slice(0, 42);//hs
                 console.log('hashedSecret( from bob side):', hashedSecret);
 
                 return hashedSecret
  }
+
+
+ async function simplecreateStealthWallet(privateKey, hashedSharedSecret) {
+    //  4- To compute his stealth address privK Bob does: 
+    // b + hs
+    console.warn('simplecreateStealthWallet()', privateKey, hashedSharedSecret)
+
+
+    // ...............
+    // BOB can comput the private key to the stealth addres
+    // b +hs
+    // ...............
+    const hprivkeyBigInt = BigInt(privateKey);  // hs should already be in hex or BigInt format
+    // b = hprivkeyBigInt
+
+    const hsBigInt = BigInt(hashedSharedSecret);  // hs should already be in hex or BigInt format
+    hs = hsBigInt
+
+    computedPrivKey = hprivkeyBigInt + hsBigInt
+
+    console.warn('🛰️ computedPrivKey: ', computedPrivKey)
+
+
+    eth2bigint = ethers.toBigInt(computedPrivKey)
+
+ }
+
+ async function createStealthWallet(privateKey, publicKey) {
+    //  4- To compute his stealth address privK Bob does: 
+    // b + hs
+
+    console.warn('🦸‍♂️createStealthWallet()', privateKey, publicKey)
+     publicKeyHexWithoutPrefix = removeHexPrefix(publicKey);
+     pubPoint = secp.ProjectivePoint.fromHex(publicKeyHexWithoutPrefix);
+
+    //  here
+     sharedSecret = pubPoint.multiply(BigInt(privateKey)).toHex();//s= a *B
+
+    console.log('👫sharedSecret  (at createStealthWallet ):', sharedSecret);
+     hashedSecret = ethers.keccak256('0x' + sharedSecret).slice(0, 42);
+
+    // ...............
+    // BOB can comput the private key to the stealth addres
+    // b +hs
+    // ...............
+    const hprivkeyBigInt = BigInt(privateKey);  // hs should already be in hex or BigInt format
+    // b = hprivkeyBigInt
+
+    const hsBigInt = BigInt(hashedSecret);  // hs should already be in hex or BigInt format
+    hs = hsBigInt
+
+    computedPrivKey = hprivkeyBigInt + hsBigInt
+
+    console.warn('🛰️ computedPrivKey: ', computedPrivKey)
+
+
+    eth2bigint = ethers.toBigInt(computedPrivKey)
+
+    const stealthPrivateKey = ethers.zeroPadValue(ethers.toBeHex(computedPrivKey), 32);
+    console.warn(' 🚁 stealthPrivateKey: ', stealthPrivateKey)
+    const stealthwallet = new ethers.Wallet(stealthPrivateKey);
+    const derivedStealthPubKey = stealthwallet.publicKey;
+    console.warn(' 🪂🦹‍♂️ stealthPrivateKey: ', stealthPrivateKey)
+    console.warn(' 🪂 stealthAddress: ', stealthwallet.address)
+
+
+    return stealthwallet
+
+}
         // -------------------------------------
         // BOB PART?
         // -------------------------------------
